@@ -1,0 +1,22 @@
+{
+  "name": "Visualize",
+  "version": "0.2.0",
+  "description": "Visualize2 ",
+  "main": "index.html",
+  "window": {
+    "frame": false,
+    "toolbar": false,
+    "transparent": true,
+    "focus": true,
+    "width": 300,
+    "height": 150
+  },
+  "author": "Andrew Vallejos",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.4.7",
+    "lowdb": "^0.10.2",
+    "pixl-xml": "^1.0.4",
+    "xml2js": "^0.4.15"
+  }
+}

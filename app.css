@@ -1,0 +1,72 @@
+html#index{
+    border-radius: 15px;
+}
+
+body{
+    background: #C0ECFC;
+    color: white;
+    font-family: 'Signika';
+    -webkit-app-region: drag
+}
+
+button, select{
+    -webkit-app-region: no-drag;
+    width: 10em;
+    margin: 0.3em;
+}
+
+p, img{
+    -webkit-user-select: all;
+    -webkit-app-region: no-drag;
+}
+
+#main {
+    padding-top: 2.3em;
+}
+
+#peptide-list, #scan-list{
+    min-height: 40%;
+    max-height: 40%;
+    overflow: scroll;
+}
+
+#peptide-list{
+    background-color: #265a88;
+    color:whitesmoke;
+}
+
+#scan-list{
+    background-color: #286090;
+    color: whitesmoke;
+}
+
+#protein-list{
+    padding-top: 0.5em;
+    color: whitesmoke;
+    height: 100%;
+    background-color: #204d74;
+    overflow: scroll;
+}
+
+#column-2{
+    background-color: #2860AA;
+
+}
+
+#details{
+    height: 60%;
+    overflow: scroll;
+    color:whitesmoke;
+}
+
+#report{
+    color: black;
+}
+
+#protein-table tr:hover, #scan-table tr:hover, #peptide-table tr:hover{
+    cursor: pointer;
+}
+
+.success, .info{
+    color:black;
+}
