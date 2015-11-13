@@ -3,6 +3,8 @@
 var zip = require('adm-zip');
 var xml = require('pixl-xml');
 var fs = require('fs');
+var protein_js = {};
+var scan_js = {};
 
 function readEz2(file){
     var ez2 = new zip(file);
@@ -38,27 +40,30 @@ function readEz2(file){
 
 function saveProteins(json){
     window.localStorage.clear();
-    window.localStorage.setItem('proteins', JSON.stringify(json));
+    //window.localStorage.setItem('proteins', JSON.stringify(json));
     var new_js = {};
     window.$.each(json, function(){
         new_js[this.accession] = updatePep2Scan(this);
 
     });
-    window.localStorage.setItem('proteins', JSON.stringify(new_js));
+    //window.localStorage.setItem('proteins', JSON.stringify(new_js));
+    protein_js = new_js;
 }
 
 function saveScans(json){
-    window.localStorage.setItem('scans', '');
+    //window.localStorage.setItem('scans', '');
     var new_js = {};
     window.$.each(json, function(){
         new_js[this.raw_name] = this;
 
     });
-    window.localStorage.setItem('scans', JSON.stringify(new_js));
+    //window.localStorage.setItem('scans', JSON.stringify(new_js));
+    scan_js = new_js;
 }
 
 function getProteins(){
-    return JSON.parse(window.localStorage.getItem('proteins'));
+    return protein_js;
+    //return JSON.parse(window.localStorage.getItem('proteins'));
 }
 
 function getPeptides(protein){
@@ -95,11 +100,11 @@ function getScans(protein, sequence){
 }
 
 function getProteinDetails(protein){
-    return JSON.parse(window.localStorage.getItem('proteins'))[protein];
+    return protein_js[protein];
 }
 
 function getScanDetails(scan){
-    return JSON.parse(window.localStorage.getItem('scans'))[scan];
+    return scan_js[scan];
 }
 
 function updatePep2Scan(json){

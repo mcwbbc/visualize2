@@ -8,7 +8,7 @@ function openEzView(file){
         position: 'center',
         width: 800,
         height: 600,
-        toolbar: true,
+        toolbar: false,
         focus: true
     });
 
@@ -113,17 +113,20 @@ function updateScanDetails(scan, cntx){
 }
 
 function updateProteinDetails(accession, cntx){
-    var html = "<h3>Details</h3><table class=table>";
-    window.$.each(ezf.listAllPeptides(accession), function(){
-        html += "<tr><td>" + this +"</td></tr>";
-    });
-    html += "</table>" +
-        "<div class=row><div class=col-xs-3>Max XCorr</div><div class=col-xs-6>" +
+    var html = "<h3>Details</h3>";
+
+    html += "<div class=row><div class=col-xs-3>Max XCorr</div><div class=col-xs-6>" +
         ezf.getProteinDetails(accession).max_xcorr + "</div></div>" +
         "<div class=row><div class=col-xs-3>Total XCorr</div><div class=col-xs-6>" +
         ezf.getProteinDetails(accession).total_xcorr + "</div></div>" +
         "<div class=row><div class=col-xs-3>Total TIC</div><div class=col-xs-6>" +
         ezf.getProteinDetails(accession).total_tic + "</div></div>";
+
+    html += "<table class=table>";
+    window.$.each(ezf.listAllPeptides(accession), function(){
+        html += "<tr><td>" + this +"</td></tr>";
+    });
+    html += "</table>";
     cntx.window.$('#details').html(html);
 }
 
