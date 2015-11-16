@@ -4,6 +4,7 @@
   "description": "Visualize2 ",
   "main": "index.html",
   "window": {
+    "title": "Visualize",
     "frame": false,
     "toolbar": false,
     "transparent": true,
@@ -15,7 +16,6 @@
   "license": "ISC",
   "dependencies": {
     "adm-zip": "^0.4.7",
-    "lowdb": "^0.10.2",
     "pixl-xml": "^1.0.4",
     "xml2js": "^0.4.15"
   }

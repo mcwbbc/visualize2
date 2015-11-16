@@ -6,9 +6,10 @@ var ezf = require('./ezf');
 function openEzView(file){
     var ez_view = gui.Window.open('./ez_view.html', {
         position: 'center',
+        title: 'Visualize',
         width: 800,
         height: 600,
-        toolbar: false,
+        toolbar: true,
         focus: true
     });
 
@@ -46,6 +47,7 @@ function addProteinClick(cntx){
         cntx.window.$('.success').removeClass('success');
         cntx.window.$(this).addClass('success');
         cntx.window.$('tbody', '#peptide-table').html('');
+        cntx.window.$('tbody', '#scan-table').html('');
         listPeptides(cntx.window.$(this).attr('accession-data'), cntx);
         updateProteinDetails(cntx.window.$(this).attr('accession-data'), cntx);
     });
