@@ -13,4 +13,4 @@ Additional libraries installed via npm
 Addition libraries installed via bower
 - jquery
 - bootstrap
-- datatabales
+- datatables
