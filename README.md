@@ -10,7 +10,7 @@ Additional libraries installed via npm
 - adm-zip
 - pixl-xml
 
-Addition libraries installed via bower
+Additional libraries installed via bower
 - jquery
 - bootstrap
 - datatables
