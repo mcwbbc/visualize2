@@ -10,13 +10,15 @@ function openEzView(file){
         width: 800,
         height: 600,
         toolbar: true,
-        focus: true
+        focus: true,
+        fullscreen: true
     });
 
     ezf.readEz2(file);
     ez_view.on('loaded', function(){
         listProteins(ez_view);
         addProteinClick(ez_view);
+        addProteinMenu(ez_view);
     });
 
 }
@@ -42,7 +44,7 @@ function listProteins(cntx){
 
 function addProteinClick(cntx){
     console.log("DEBUG: adding protein click events");
-    cntx.window.$('tr', '#protein-table').click(function(){
+    cntx.window.$('.protein', '#protein-table').click(function(){
         //console.log(cntx.window.$(this).attr('accession-data'));
         cntx.window.$('.success').removeClass('success');
         cntx.window.$(this).addClass('success');
@@ -132,7 +134,39 @@ function updateProteinDetails(accession, cntx){
     cntx.window.$('#details').html(html);
 }
 
+function addProteinMenu(cntx){
+    var menu = new gui.Menu();
+
+    cntx.window.$('.protein', '#protein-table').contextmenu(function(event) {
+        event.preventDefault();
+        //console.log("clicked at: " + event.pageX + "," + event.pageY);
+        var window_offset_x = gui.Window.get(cntx.window).x - gui.Window.get().x;
+        var window_offset_y = gui.Window.get(cntx.window).y - gui.Window.get().y;
+
+        //empty context menu
+        window.$.each(menu.items, function(){
+            menu.remove(this);
+        });
+
+        var acc = cntx.window.$(this).attr('accession-data');
+        menu.append(new gui.MenuItem({
+                                        label: 'See in UniProt',
+                                        click: function(){
+                                                go2UniProt(acc);
+                                        }
+                                    })
+        );
+        menu.popup(event.pageX + window_offset_x, event.pageY + window_offset_y);
+        return false;
+    })
+}
+
+function go2UniProt(accession){
+    console.log('context clicked ' + accession);
+    var url = 'http://www.uniprot.org/uniprot/' + accession;
+    gui.Shell.openExternal(url);
+}
+
 module.exports = {
-    openEzView: openEzView,
-    listProteins: listProteins
+	openEzView: openEzView
 }

@@ -1,6 +1,6 @@
 'use strict';
 
-var ui = require('./userInterface');
+var ez_ui = require('./ezUI');
 
 function buttonFunctions(){
     window.$('#open').click(function(event){
@@ -16,7 +16,7 @@ function chooseFile(name){
     chooser.unbind('change');
     chooser.change(function(event){
         console.log(window.$(this).val());
-        ui.openEzView(window.$(this).val());
+        ez_ui.openEzView(window.$(this).val());
     });
 
     chooser.trigger('click');

@@ -44,6 +44,8 @@ function saveProteins(json){
     var new_js = {};
     window.$.each(json, function(){
         new_js[this.accession] = updatePep2Scan(this);
+        //backwards compatability
+        if(isNaN(this.protein_prob)){ this.protein_prob = this.protein_prophet}
 
     });
     //window.localStorage.setItem('proteins', JSON.stringify(new_js));
@@ -83,7 +85,7 @@ function listAllPeptides(protein){
      if( typeof peptides === 'string'){
      peptides = [peptides];
      }
-     return peptides;
+     return peptides.sort();
 }
 
 function getScans(protein, sequence){
@@ -104,6 +106,8 @@ function getProteinDetails(protein){
 }
 
 function getScanDetails(scan){
+    //added for backwards compatability
+    if(isNaN(scan_js[scan].peptide_prob)){ scan_js[scan].peptide_prob = scan_js[scan].peptide_prophet}
     return scan_js[scan];
 }
 

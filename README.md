@@ -1,7 +1,7 @@
 # visualize2
-Visualize 2.0 (BETA)
+V2 (ALPHA)
 
-Visualize 2.0 is a rewrite and update of Visualize, a proteomic data visualization tool (http://proteomics.mcw.edu/visualize.html).
+V2 is a rewrite and update of Visualize, a proteomic data visualization tool (http://proteomics.mcw.edu/visualize.html).
 
 Requirements:
 The package runs on NW.js

@@ -39,6 +39,7 @@ node_modules
 .idea/*
 test.*
 db.*
+scans.json
 
 #bower
 bower_components
