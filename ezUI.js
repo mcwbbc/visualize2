@@ -2,6 +2,7 @@
 
 var gui = window.require('nw.gui');
 var ezf = require('./ezf');
+var peptide_table;
 
 function openEzView(file){
     var ez_view = gui.Window.open('./ez_view.html', {
@@ -48,7 +49,6 @@ function addProteinClick(cntx){
         //console.log(cntx.window.$(this).attr('accession-data'));
         cntx.window.$('.success').removeClass('success');
         cntx.window.$(this).addClass('success');
-        cntx.window.$('tbody', '#peptide-table').html('');
         cntx.window.$('tbody', '#scan-table').html('');
         listPeptides(cntx.window.$(this).attr('accession-data'), cntx);
         updateProteinDetails(cntx.window.$(this).attr('accession-data'), cntx);
@@ -56,17 +56,29 @@ function addProteinClick(cntx){
 }
 
 function listPeptides(accession, cntx) {
+    if(cntx.window.$.fn.dataTable.isDataTable( '#peptide-table')){
+        peptide_table.destroy();
+    }
+    cntx.window.$('tbody', '#peptide-table').html('');
+    
     window.$.each(ezf.getPeptides(accession), function () {
         cntx.window.$('tbody','#peptide-table').append("<tr class=peptide peptide-data=" + this +">" +
+            "<td>" + ezf.getScans(accession, this).length + "</td>" +
             "<td>" + this + "</td>" +
             "</tr>");
     })
     addPeptideClick(accession, cntx);
+    peptide_table = cntx.window.$('#peptide-table').DataTable({
+        "paging": false,
+        "info": false,
+        "order": [[0, "desc"]],
+        "dom": ''
+    });
 }
 
 function addPeptideClick(accession, cntx){
     //console.log("DEBUG: adding peptide click events");
-    cntx.window.$('tr', '#peptide-table').click(function(){
+    cntx.window.$('.peptide', '#peptide-table').click(function(){
         //console.log(cntx.window.$(this).attr('accession-data'));
         cntx.window.$('.success', '#peptide-table').removeClass('success');
         cntx.window.$('.success', '#scan-table').removeClass('success');
