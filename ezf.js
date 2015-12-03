@@ -5,6 +5,7 @@ var xml = require('pixl-xml');
 var fs = require('fs');
 var protein_js = {};
 var scan_js = {};
+var fasta_js = {};
 
 function readEz2(file){
     var ez2 = new zip(file);
@@ -28,10 +29,21 @@ function readEz2(file){
             var text = ez2.readAsText('scans.xml','utf8');
             json = xml.parse(text );
 
-            fs.writeFile('./scans.json', JSON.stringify(json), function(err){
+            fs.writeFile('./test.scans.json', JSON.stringify(json), function(err){
                 if(err){ return console.log(err);}
             });
             saveScans(json);
+            //console.log(JSON.stringify(json));
+        }
+        if(entry.entryName == 'fasta.xml'){
+            var json = undefined;
+            var text = ez2.readAsText('fasta.xml','utf8');
+            json = xml.parse(text );
+
+            fs.writeFile('./test.fasta.json', JSON.stringify(json), function(err){
+                if(err){ return console.log(err);}
+            });
+            saveFasta(json);
             //console.log(JSON.stringify(json));
         }
     });
@@ -61,6 +73,14 @@ function saveScans(json){
     });
     //window.localStorage.setItem('scans', JSON.stringify(new_js));
     scan_js = new_js;
+}
+
+function saveFasta(json){
+    var new_js = {};
+    window.$.each(json, function(){
+        new_js[this.accession] = this;
+    });
+    fasta_js = new_js;
 }
 
 function getProteins(){
@@ -101,6 +121,17 @@ function getScans(protein, sequence){
     return scans;
 }
 
+function getFasta(protein){
+    var seq_array = fasta_js[protein].sequence.split('');
+    var seq = '';
+    while(seq_array.length >= 50 ){
+        seq += seq_array.splice(0,50).join('') + "<br />";
+    }
+    seq += seq_array.join('') + "<br />";
+    return ['>', protein, '|', fasta_js[protein].name, '|', fasta_js[protein].description].join(" ") + "<br />" +
+            seq;
+}
+
 function getProteinDetails(protein){
     return protein_js[protein];
 }
@@ -127,5 +158,6 @@ module.exports = {
     getScans: getScans,
     getProteinDetails: getProteinDetails,
     getScanDetails: getScanDetails,
-    listAllPeptides: listAllPeptides
+    listAllPeptides: listAllPeptides,
+    getFasta: getFasta
 };

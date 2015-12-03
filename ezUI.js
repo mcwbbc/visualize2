@@ -3,9 +3,10 @@
 var gui = window.require('nw.gui');
 var ezf = require('./ezf');
 var peptide_table;
+var cntx;
 
 function openEzView(file){
-    var ez_view = gui.Window.open('./ez_view.html', {
+    cntx = gui.Window.open('./ez_view.html', {
         position: 'center',
         title: 'Visualize',
         width: 800,
@@ -16,15 +17,15 @@ function openEzView(file){
     });
 
     ezf.readEz2(file);
-    ez_view.on('loaded', function(){
-        listProteins(ez_view);
-        addProteinClick(ez_view);
-        addProteinMenu(ez_view);
+    cntx.on('loaded', function(){
+        listProteins();
+        addProteinClick();
+        addProteinMenu();
     });
 
 }
 
-function listProteins(cntx){
+function listProteins(){
     window.$.each(ezf.getProteins(), function () {
         //console.log(JSON.stringify(this.name));
         cntx.window.$('tbody','#protein-table').append("<tr class=protein accession-data=" + this.accession + ">" +
@@ -43,7 +44,7 @@ function listProteins(cntx){
     });
 }
 
-function addProteinClick(cntx){
+function addProteinClick(){
     console.log("DEBUG: adding protein click events");
     cntx.window.$('.protein', '#protein-table').click(function(){
         //console.log(cntx.window.$(this).attr('accession-data'));
@@ -55,7 +56,7 @@ function addProteinClick(cntx){
     });
 }
 
-function listPeptides(accession, cntx) {
+function listPeptides(accession) {
     if(cntx.window.$.fn.dataTable.isDataTable( '#peptide-table')){
         peptide_table.destroy();
     }
@@ -67,7 +68,7 @@ function listPeptides(accession, cntx) {
             "<td>" + this + "</td>" +
             "</tr>");
     })
-    addPeptideClick(accession, cntx);
+    addPeptideClick(accession);
     peptide_table = cntx.window.$('#peptide-table').DataTable({
         "paging": false,
         "info": false,
@@ -76,7 +77,7 @@ function listPeptides(accession, cntx) {
     });
 }
 
-function addPeptideClick(accession, cntx){
+function addPeptideClick(accession){
     //console.log("DEBUG: adding peptide click events");
     cntx.window.$('.peptide', '#peptide-table').click(function(){
         //console.log(cntx.window.$(this).attr('accession-data'));
@@ -84,20 +85,20 @@ function addPeptideClick(accession, cntx){
         cntx.window.$('.success', '#scan-table').removeClass('success');
         cntx.window.$(this).addClass('success');
         cntx.window.$('tbody', '#scan-table').html('');
-        listScans(accession, cntx.window.$(this).attr('peptide-data'), cntx);
+        listScans(accession, cntx.window.$(this).attr('peptide-data'));
     });
 }
 
-function listScans(accession, sequence, cntx){
+function listScans(accession, sequence){
     window.$.each(ezf.getScans(accession, sequence), function(){
         cntx.window.$('tbody', '#scan-table').append("<tr class=scan scan-data=" + this + ">" +
         "<td>" + this + "</td>" +
         "</tr>");
     });
-    addScanClick(cntx);
+    addScanClick();
 }
 
-function addScanClick(cntx){
+function addScanClick(){
     cntx.window.$('tr', '#scan-table').click(function(){
         cntx.window.$('.success', '#scan-table').removeClass('success');
         cntx.window.$(this).addClass('success');
@@ -105,7 +106,7 @@ function addScanClick(cntx){
     });
 }
 
-function updateScanDetails(scan, cntx){
+function updateScanDetails(scan){
     var html = "<h3>Details</h3>";
     html += "<div class=row><div class=col-xs-3>Scan</div><div class=col-xs-6>" +
         ezf.getScanDetails(scan).name + "</div></div>" +
@@ -128,7 +129,7 @@ function updateScanDetails(scan, cntx){
     cntx.window.$('#details').html(html);
 }
 
-function updateProteinDetails(accession, cntx){
+function updateProteinDetails(accession){
     var html = "<h3>Details</h3>";
 
     html += "<div class=row><div class=col-xs-3>Max XCorr</div><div class=col-xs-6>" +
@@ -146,7 +147,7 @@ function updateProteinDetails(accession, cntx){
     cntx.window.$('#details').html(html);
 }
 
-function addProteinMenu(cntx){
+function addProteinMenu(){
     var menu = new gui.Menu();
 
     cntx.window.$('.protein', '#protein-table').contextmenu(function(event) {
@@ -162,11 +163,13 @@ function addProteinMenu(cntx){
 
         var acc = cntx.window.$(this).attr('accession-data');
         menu.append(new gui.MenuItem({
-                                        label: 'See in UniProt',
-                                        click: function(){
-                                                go2UniProt(acc);
-                                        }
-                                    })
+                        label: 'See in UniProt',
+                        click: function(){ go2UniProt(acc); }
+                    }));
+        menu.append(new gui.MenuItem({
+                        label: 'See Sequence',
+                        click: function(){ showSequence(acc); }
+                    })
         );
         menu.popup(event.pageX + window_offset_x, event.pageY + window_offset_y);
         return false;
@@ -177,6 +180,12 @@ function go2UniProt(accession){
     console.log('context clicked ' + accession);
     var url = 'http://www.uniprot.org/uniprot/' + accession;
     gui.Shell.openExternal(url);
+}
+
+function showSequence(accession){
+    var html = "<h3>Details</h3>";
+    html += "<div class=col-xs-12>" + ezf.getFasta(accession) + "</div>";
+    cntx.window.$('#details').html(html);
 }
 
 module.exports = {
