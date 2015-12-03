@@ -132,6 +132,28 @@ function getFasta(protein){
             seq;
 }
 
+function calculateCoverage(protein){
+    var seq_map = [];
+    var seq_count = 0;
+    window.$.each(getPeptides(protein), function(i, val){
+        console.log(val);
+        var pat = RegExp(val, 'igm');
+        var res = pat.exec(fasta_js[protein].sequence);
+        console.log(fasta_js[protein].sequence );
+        console.log(pat.source);
+        if(res === null){return {};}
+        console.log("index: " + res.index);
+        for(var i = 0; i < val.length; i++){
+            seq_map[res.index + i] = 1;
+        }
+    });
+    window.$.each(seq_map, function(i,v){ seq_count += (v || 0); })
+    return {"coverage": seq_count / fasta_js[protein].sequence.length,
+            "observed": seq_count,
+            "total": fasta_js[protein].sequence.length  }
+
+}
+
 function getProteinDetails(protein){
     return protein_js[protein];
 }
@@ -159,5 +181,6 @@ module.exports = {
     getProteinDetails: getProteinDetails,
     getScanDetails: getScanDetails,
     listAllPeptides: listAllPeptides,
-    getFasta: getFasta
+    getFasta: getFasta,
+    calculateCoverage: calculateCoverage
 };

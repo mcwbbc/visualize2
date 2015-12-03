@@ -132,12 +132,17 @@ function updateScanDetails(scan){
 function updateProteinDetails(accession){
     var html = "<h3>Details</h3>";
 
+    var coverage = ezf.calculateCoverage(accession);
     html += "<div class=row><div class=col-xs-3>Max XCorr</div><div class=col-xs-6>" +
         ezf.getProteinDetails(accession).max_xcorr + "</div></div>" +
         "<div class=row><div class=col-xs-3>Total XCorr</div><div class=col-xs-6>" +
         ezf.getProteinDetails(accession).total_xcorr + "</div></div>" +
         "<div class=row><div class=col-xs-3>Total TIC</div><div class=col-xs-6>" +
-        ezf.getProteinDetails(accession).total_tic + "</div></div>";
+        ezf.getProteinDetails(accession).total_tic + "</div></div>" +
+        "<div class=row><div class=col-xs-3>% Coverage</div><div class=col-xs-6>" +
+        coverage.observed + " of " +
+        coverage.total + " aa. " +
+        (coverage.coverage * 100).toPrecision(5) + "%</div></div>";
 
     html += "<table class=table>";
     window.$.each(ezf.listAllPeptides(accession), function(){
