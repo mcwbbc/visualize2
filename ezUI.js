@@ -4,6 +4,7 @@ var gui = window.require('nw.gui');
 var ezf = require('./ezf');
 var peptide_table;
 var cntx;
+var protein_menu = new gui.Menu();
 
 function openEzView(file){
     cntx = gui.Window.open('./ez_view.html', {
@@ -11,7 +12,7 @@ function openEzView(file){
         title: 'Visualize',
         width: 800,
         height: 600,
-        toolbar: true,
+        toolbar: false,
         focus: true,
         fullscreen: true
     });
@@ -32,7 +33,8 @@ function listProteins(){
                 "<td>" + Number(this.protein_prob).toPrecision(4) + "</td>" +
                 "<td>" + this.name + "</td>" +
                 "<td>" + this.accession + "</td>" +
-                "<td>" + this.description + "</td>" +
+                "<td>" + this.peptide_count + "</td>" +
+                "<td>" + this.scan_count + "</td>" +
                 "</tr>");
     });
     cntx.window.$('#protein-table').DataTable({
@@ -133,7 +135,9 @@ function updateProteinDetails(accession){
     var html = "<h3>Details</h3>";
 
     var coverage = ezf.calculateCoverage(accession);
-    html += "<div class=row><div class=col-xs-3>Max XCorr</div><div class=col-xs-6>" +
+    html += "<div class=row><div class=col-xs-3>Description</div><div class=col-xs-9>" +
+        ezf.getProteinDetails(accession).description + "</div></div>" +
+        "<div class=row><div class=col-xs-3>Max XCorr</div><div class=col-xs-6>" +
         ezf.getProteinDetails(accession).max_xcorr + "</div></div>" +
         "<div class=row><div class=col-xs-3>Total XCorr</div><div class=col-xs-6>" +
         ezf.getProteinDetails(accession).total_xcorr + "</div></div>" +
@@ -153,7 +157,6 @@ function updateProteinDetails(accession){
 }
 
 function addProteinMenu(){
-    var menu = new gui.Menu();
 
     cntx.window.$('.protein', '#protein-table').contextmenu(function(event) {
         event.preventDefault();
@@ -162,23 +165,29 @@ function addProteinMenu(){
         var window_offset_y = gui.Window.get(cntx.window).y - gui.Window.get().y;
 
         //empty context menu
-        window.$.each(menu.items, function(){
-            menu.remove(this);
-        });
+        emptyMenu(protein_menu);
+
 
         var acc = cntx.window.$(this).attr('accession-data');
-        menu.append(new gui.MenuItem({
+        protein_menu.append(new gui.MenuItem({
                         label: 'See in UniProt',
                         click: function(){ go2UniProt(acc); }
                     }));
-        menu.append(new gui.MenuItem({
+        protein_menu.append(new gui.MenuItem({
                         label: 'See Sequence',
                         click: function(){ showSequence(acc); }
                     })
         );
-        menu.popup(event.pageX + window_offset_x, event.pageY + window_offset_y);
+        protein_menu.popup(event.pageX + window_offset_x, event.pageY + window_offset_y);
         return false;
-    })
+    });
+}
+
+function emptyMenu(menu){
+    // always remove the 0th item, since the menu automatically resizes itself after an item is removed
+    window.$.each(menu.items, function(){
+        menu.removeAt(0);
+    });
 }
 
 function go2UniProt(accession){
