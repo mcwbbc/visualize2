@@ -2,16 +2,18 @@
 <head>
 <title>Visualize v2</title>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery-ui.min.css" />
     <link rel="stylesheet" href="./app.css" />
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="bower_components/datatables/media/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="bower_components/datatables/media/js/dataTables.bootstrap.min.js"></script>
 </head>
 <body>
     <div class="container-fluid" id="report">
         <div class="row">
-            <div class="col-xs-4" id="column-1" >
+            <div class="col-xs-4" id="column-1">
                 <div class="row">
                     <div class="col-md-12" id="protein-list">
                         <h3>Proteins</h3>
@@ -63,4 +65,86 @@
             </div>
         </div>
     </div>
+<script>
+    $.ui.plugin.add("resizable", "alsoResizeReverse", {
+
+        start: function() {
+            var that = $(this).resizable("instance"),
+                    o = that.options,
+                    _store = function(exp) {
+                        $(exp).each(function() {
+                            var el = $(this);
+                            el.data("ui-resizable-alsoResizeReverse", {
+                                width: parseInt(el.width(), 10),
+                                height: parseInt(el.height(), 10),
+                                left: parseInt(el.css("left"), 10),
+                                top: parseInt(el.css("top"), 10)
+                            });
+                        });
+                    };
+
+            if (typeof(o.alsoResizeReverse) === "object" && !o.alsoResizeReverse.parentNode) {
+                if (o.alsoResizeReverse.length) {
+                    o.alsoResizeReverse = o.alsoResizeReverse[0];
+                    _store(o.alsoResizeReverse);
+                } else {
+                    $.each(o.alsoResizeReverse, function(exp) {
+                        _store(exp);
+                    });
+                }
+            } else {
+                _store(o.alsoResizeReverse);
+            }
+        },
+
+        resize: function(event, ui) {
+            var that = $(this).resizable("instance"),
+                    o = that.options,
+                    os = that.originalSize,
+                    op = that.originalPosition,
+                    delta = {
+                        height: (that.size.height - os.height) || 0,
+                        width: (that.size.width - os.width) || 0,
+                        top: (that.position.top - op.top) || 0,
+                        left: (that.position.left - op.left) || 0
+                    },
+
+                    _alsoResizeReverse = function(exp, c) {
+                        $(exp).each(function() {
+                            var el = $(this),
+                                    start = $(this).data("ui-resizable-alsoResizeReverse"),
+                                    style = {},
+                                    css = c && c.length ?
+                                            c :
+                                            el.parents(ui.originalElement[0]).length ? ["width", "height"] : ["width", "height", "top", "left"];
+
+                            $.each(css, function(i, prop) {
+                                var sum = (start[prop] || 0) - (delta[prop] || 0);
+                                if (sum && sum >= 0) {
+                                    style[prop] = sum || null;
+                                }
+                            });
+                            delete style["height"];
+                            console.log(JSON.stringify(style));
+                            style["width"] += 60;
+                            el.css(style);
+                        });
+                    };
+
+            if (typeof(o.alsoResizeReverse) === "object" && !o.alsoResizeReverse.nodeType) {
+                $.each(o.alsoResizeReverse, function(exp, c) {
+                    _alsoResizeReverse(exp, c);
+                });
+            } else {
+                _alsoResizeReverse(o.alsoResizeReverse);
+            }
+        },
+
+        stop: function() {
+            $(this).removeData("resizable-alsoResizeReverse");
+        }
+    });
+
+    $('#column-1').resizable({ alsoResizeReverse: "#column-2"});
+</script>
 </body>

@@ -12,7 +12,7 @@ function openEzView(file){
         title: 'Visualize',
         width: 800,
         height: 600,
-        toolbar: false,
+        toolbar: true,
         focus: true,
         fullscreen: true
     });
@@ -22,6 +22,11 @@ function openEzView(file){
         listProteins();
         addProteinClick();
         addProteinMenu();
+    });
+
+    cntx.on('resize', function(){
+        cntx.window.$('#column-1').removeAttr('style');
+        cntx.window.$('#column-2').removeAttr('style');
     });
 
 }
