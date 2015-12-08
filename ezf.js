@@ -138,13 +138,13 @@ function calculateCoverage(protein){
     //return empty if no sequence
     if(typeof fasta_js[protein] === 'undefined'){ return {"coverage": 0, "observed": 0, "total": 0  };}
     window.$.each(getPeptides(protein), function(i, val){
-        console.log(val);
+        //console.log(val);
         var pat = RegExp(val, 'igm');
         var res = pat.exec(fasta_js[protein].sequence);
-        console.log(fasta_js[protein].sequence );
-        console.log(pat.source);
+        //console.log(fasta_js[protein].sequence );
+        //console.log(pat.source);
         if(res === null){return {};} //return empty if no match
-        console.log("index: " + res.index);
+        //console.log("index: " + res.index);
         for(var i = 0; i < val.length; i++){
             seq_map[res.index + i] = 1;
         }

@@ -29,6 +29,62 @@ function openEzView(file){
         cntx.window.$('#column-2').removeAttr('style');
     });
 
+
+    addShortCuts();
+
+}
+
+function addShortCuts(){
+    var upKey = {
+        key: "Up",
+        active: function(){
+            var i = getActiveTR();
+            if(i > -1) {
+                console.log('change row');
+                setActiveTR(i - 1);
+                updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
+            }
+        },
+        failed: function(msg){
+            console.log(msg);
+        }
+    };
+
+    var keyDown = {
+        key: "Down",
+        active: function(){
+            var i = getActiveTR();
+            console.log('i: ' + i);
+            if(i > -1) {
+                console.log('change row');
+                setActiveTR(i + 1);
+                updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
+            }
+        },
+        failed: function(msg){
+            console.log(msg);
+        }
+    };
+
+    var upEvent = new gui.Shortcut(upKey);
+    gui.App.registerGlobalHotKey(upEvent);
+    var downEvent = new gui.Shortcut(keyDown);
+    gui.App.registerGlobalHotKey(downEvent);
+}
+
+function getActiveTR(){
+    var tr = cntx.window.$('.success', '#protein-table');
+    //console.log('row: ' + tr.index());
+   return tr.index();
+}
+
+function setActiveTR(index){
+    cntx.window.$('.success').removeClass('success');
+    console.log('l: ' + cntx.window.$('tr', '#protein-table tbody').length);
+    if(index >= cntx.window.$('tr', '#protein-table tbody').length){ index = 0;}
+    var htmlTR = cntx.window.$('tr', '#protein-table tbody').get(Number(index));
+    cntx.window.$(htmlTR).addClass('success');
+    htmlTR.scrollIntoView({behavior: "smooth"});
 }
 
 function listProteins(){
@@ -54,13 +110,17 @@ function listProteins(){
 function addProteinClick(){
     console.log("DEBUG: adding protein click events");
     cntx.window.$('.protein', '#protein-table').click(function(){
-        //console.log(cntx.window.$(this).attr('accession-data'));
         cntx.window.$('.success').removeClass('success');
         cntx.window.$(this).addClass('success');
-        cntx.window.$('tbody', '#scan-table').html('');
-        listPeptides(cntx.window.$(this).attr('accession-data'), cntx);
-        updateProteinDetails(cntx.window.$(this).attr('accession-data'), cntx);
+        updateProteinInfo(cntx.window.$(this).attr('accession-data'));
+        //console.log(cntx.window.$(this).attr('accession-data'));
     });
+}
+
+function updateProteinInfo(accession){
+    cntx.window.$('tbody', '#scan-table').html('');
+    listPeptides(accession);
+    updateProteinDetails(accession);
 }
 
 function listPeptides(accession) {
