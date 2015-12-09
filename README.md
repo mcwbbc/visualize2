@@ -14,3 +14,6 @@ Additional libraries installed via bower
 - jquery
 - bootstrap
 - datatables
+
+Built using:
+nwbuild -v 0.12.2 Visualize
