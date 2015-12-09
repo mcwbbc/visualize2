@@ -14,14 +14,15 @@ function openEzView(file){
         height: 600,
         toolbar: true,
         focus: true,
-        fullscreen: true
+        fullscreen: false
     });
 
     ezf.readEz2(file);
     cntx.on('loaded', function(){
         listProteins();
         addProteinClick();
-        addProteinMenu();
+        addProteinMenu()
+        addShortCuts();
     });
 
     cntx.on('resize', function(){
@@ -30,11 +31,33 @@ function openEzView(file){
     });
 
 
-    addShortCuts();
 
 }
 
 function addShortCuts(){
+    cntx.window.$(cntx.window.document).keydown(function(e){
+        if(e.which === 38){ //arrow up
+            e.preventDefault();
+            var i = getActiveTR();
+            if(i > -1) {
+                console.log('change row');
+                setActiveTR(i - 1);
+                updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
+            }
+        } else if(e.which === 40){ //arrow down
+            e.preventDefault();
+            var i = getActiveTR();
+            console.log('i: ' + i);
+            if(i > -1) {
+                console.log('change row');
+                setActiveTR(i + 1);
+                updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
+            }
+        }
+    })
+}
+
+function addGlobalShortCuts(){
     var upKey = {
         key: "Up",
         active: function(){
@@ -74,7 +97,7 @@ function addShortCuts(){
 
 function getActiveTR(){
     var tr = cntx.window.$('.success', '#protein-table');
-    //console.log('row: ' + tr.index());
+    console.log('row: ' + tr.index());
    return tr.index();
 }
 
