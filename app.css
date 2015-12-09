@@ -45,18 +45,16 @@ p, img{
     color: whitesmoke;
     height: 100%;
     background-color: #204d74;
+    border-right: #e2e2e2 double;
     overflow: scroll;
-}
-
-#column-2{
-    background-color: #2860AA;
-
 }
 
 #details{
-    height: 60%;
+    height: 56%;
     overflow: scroll;
     color:whitesmoke;
+    background-color: #2860AA;
+
 }
 
 #report{

@@ -45,42 +45,84 @@
             </div>
             <div class="col-xs-8" id="column-2">
                 <div class="row">
-                    <div class="col-sm-6" id="peptide-list">
-                        <h3>Peptides</h3>
-                        <template id="peptide-tr-template">
-                            <tr class=peptide>
-                                <td class="scan_count"/>
-                                <td class="sequence"/>"
-                            </tr>
-                        </template>
-                        <table class="table" id="peptide-table">
-                            <thead>
-                            <tr>
-                                <th>Count</th>
-                                <th>Sequence</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                    <div class="col-sm-6">
+                        <div  id="peptide-list" class="panel panel-default">
+                            <div class="panel-body">
+                                <h3>Peptides</h3>
+                                <template id="peptide-tr-template">
+                                    <tr class=peptide>
+                                        <td class="scan_count"/>
+                                        <td class="sequence"/>"
+                                    </tr>
+                                </template>
+                                <table class="table" id="peptide-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Count</th>
+                                        <th>Sequence</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6" id="scan-list">
-                        <h3>Scans</h3>
-                        <table class="table" id="scan-table">
-                            <thead></thead>
-                            <tbody>
-                            <template id="scan-tr-template">
-                                <tr class=scan>
-                                    <td class="name"/>"
-                                </tr>
-                            </template>
-                            </tbody>
-                        </table>
+                    <div class="col-sm-6">
+                        <div  id="scan-list" class="panel panel-default">
+                            <div class="panel-body">
+                                <h3>Scans</h3>
+                                <template id="scan-tr-template">
+                                    <tr class=scan>
+                                        <td class="name"/>"
+                                    </tr>
+                                </template>
+                                <table class="table" id="scan-table">
+                                    <thead></thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12" id="details">
+                    <div class="col-md-12">
+                    <template id="scan-details-template">
                         <h3>Details</h3>
+                        <div class=row>
+                            <div class=col-xs-3>Scan</div><div class="col-xs-6 name"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Protein</div><div class="col-xs-6 protein"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Sequence</div><div class="col-xs-6 sequence"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Peptide Prob</div><div class="col-xs-6 pep_prob"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>PP Discriminant Score</div><div class="col-xs-6 pp_discrim"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Charge</div><div class="col-xs-6 charge"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Delta Cn</div><div class="col-xs-6 delta_cn"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Mass</div><div class="col-xs-6 mass"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>TIC</div><div class="col-xs-6 tic"></div>
+                        </div>
+                    </template>
+                        <div  id="details" class="panel panel-default">
+                            <div class="panel-body">
+                                <h3>Details</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

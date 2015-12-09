@@ -155,10 +155,6 @@ function listPeptides(accession) {
     cntx.window.$('tbody', '#peptide-table').html('');
     
     window.$.each(ezf.getPeptides(accession), function () {
-        /*cntx.window.$('tbody','#peptide-table').append("<tr class=peptide peptide-data=" + this +">" +
-            "<td>" + ezf.getScans(accession, this).length + "</td>" +
-            "<td>" + this + "</td>" +
-            "</tr>");*/
         var template = cntx.window.document.querySelector('#peptide-tr-template');
         template.content.querySelector('.peptide').setAttribute('peptide-data', this);
         template.content.querySelector('.scan_count').innerText = ezf.getScans(accession, this).length;
@@ -189,9 +185,11 @@ function addPeptideClick(accession){
 
 function listScans(accession, sequence){
     window.$.each(ezf.getScans(accession, sequence), function(){
-        cntx.window.$('tbody', '#scan-table').append("<tr class=scan scan-data=" + this + ">" +
-        "<td>" + this + "</td>" +
-        "</tr>");
+        var template = cntx.window.document.querySelector('#scan-tr-template');
+        template.content.querySelector('.scan').setAttribute('scan-data', this);
+        template.content.querySelector('.name').innerText = this;
+        var clone = cntx.window.document.importNode(template.content, true);
+        cntx.window.$('tbody', '#scan-table').append(clone);
     });
     addScanClick();
 }
@@ -205,7 +203,7 @@ function addScanClick(){
 }
 
 function updateScanDetails(scan){
-    var html = "<h3>Details</h3>";
+    /*var html = "<h3>Details</h3>";
     html += "<div class=row><div class=col-xs-3>Scan</div><div class=col-xs-6>" +
         ezf.getScanDetails(scan).name + "</div></div>" +
         "<div class=row><div class=col-xs-3>Protein</div><div class=col-xs-6>" +
@@ -223,8 +221,19 @@ function updateScanDetails(scan){
         "<div class=row><div class=col-xs-3>Mass</div><div class=col-xs-6>" +
         Number(ezf.getScanDetails(scan).mass).toPrecision(9) + "</div></div>" +
         "<div class=row><div class=col-xs-3>TIC</div><div class=col-xs-6>" +
-        Number(ezf.getScanDetails(scan).tic).toPrecision(5) + "</div></div>";
-    cntx.window.$('#details').html(html);
+        Number(ezf.getScanDetails(scan).tic).toPrecision(5) + "</div></div>";*/
+    var template = cntx.window.document.querySelector('#scan-details-template');
+    template.content.querySelector('.name').innerText = ezf.getScanDetails(scan).name;
+    template.content.querySelector('.protein').innerText = ezf.getScanDetails(scan).reference;
+    template.content.querySelector('.sequence').innerText = ezf.getScanDetails(scan).match_peptide;
+    template.content.querySelector('.pep_prob').innerText = Number(ezf.getScanDetails(scan).peptide_prob).toPrecision(2);
+    template.content.querySelector('.pp_discrim').innerText = Number(ezf.getScanDetails(scan).pp_discrim).toPrecision(2);
+    template.content.querySelector('.charge').innerText = ezf.getScanDetails(scan).charge;
+    template.content.querySelector('.delta_cn').innerText = Number(ezf.getScanDetails(scan).deltaCn).toPrecision(4);
+    template.content.querySelector('.mass').innerText = Number(ezf.getScanDetails(scan).mass).toPrecision(9);
+    template.content.querySelector('.tic').innerText = Number(ezf.getScanDetails(scan).tic).toPrecision(5);
+    var clone = cntx.window.document.importNode(template.content, true);
+    cntx.window.$('.panel-body', '#details').html(clone);
 }
 
 function updateProteinDetails(accession){
@@ -249,7 +258,7 @@ function updateProteinDetails(accession){
         html += "<tr><td>" + this +"</td></tr>";
     });
     html += "</table>";
-    cntx.window.$('#details').html(html);
+    cntx.window.$('.panel-body','#details').html(html);
 }
 
 function addProteinMenu(){
