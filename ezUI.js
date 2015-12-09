@@ -90,18 +90,28 @@ function setActiveTR(index){
 function listProteins(){
     window.$.each(ezf.getProteins(), function () {
         //console.log(JSON.stringify(this.name));
-        cntx.window.$('tbody','#protein-table').append("<tr class=protein accession-data=" + this.accession + ">" +
+        /*cntx.window.$('tbody','#protein-table').append("<tr class=protein accession-data=" + this.accession + ">" +
                 "<td>" + Number(this.protein_prob).toPrecision(4) + "</td>" +
                 "<td>" + this.name + "</td>" +
                 "<td>" + this.accession + "</td>" +
                 "<td>" + this.peptide_count + "</td>" +
                 "<td>" + this.scan_count + "</td>" +
-                "</tr>");
+                "</tr>");*/
+        var template = cntx.window.document.querySelector('#protein-tr-template');
+        template.content.querySelector('.protein').setAttribute('accession-data', this.accession);
+        template.content.querySelector('.pp').innerText = Number(this.protein_prob).toPrecision(4);
+        template.content.querySelector('.name').innerText = this.name;
+        template.content.querySelector('.accession').innerText = this.accession;
+        template.content.querySelector('.pep_count').innerText = this.peptide_count;
+        template.content.querySelector('.scan_count').innerText = this.scan_count;
+        var clone = cntx.window.document.importNode(template.content, true);
+        cntx.window.$('tbody', '#protein-table').append(clone);
+
     });
     cntx.window.$('#protein-table').DataTable({
         "paging": false,
         "info": false,
-        "order": [[0, "desc"]],
+        "order": [[0, "desc"],[4,"desc"],[3,"desc"]],
         "dom": '<"top">f'
 
     });

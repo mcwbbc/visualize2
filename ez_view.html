@@ -28,6 +28,15 @@
                             </tr>
                             </thead>
                             <tbody>
+                            <template id="protein-tr-template">
+                                <tr class=protein accession-data="">
+                                    <td class="pp"/>
+                                    <td class="name"/>"
+                                    <td class="accession"/>
+                                    <td class="pep_count"/>
+                                    <td class="scan_count"/>
+                                </tr>
+                            </template>
                             </tbody>
                         </table>
                     </div>
@@ -124,6 +133,7 @@
                                     style[prop] = sum || null;
                                 }
                             });
+                            //nwjs and bootstrap specific edits
                             delete style["height"];
                             style["width"] += 60;
                             el.css(style);
