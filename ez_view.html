@@ -47,6 +47,12 @@
                 <div class="row">
                     <div class="col-sm-6" id="peptide-list">
                         <h3>Peptides</h3>
+                        <template id="peptide-tr-template">
+                            <tr class=peptide>
+                                <td class="scan_count"/>
+                                <td class="sequence"/>"
+                            </tr>
+                        </template>
                         <table class="table" id="peptide-table">
                             <thead>
                             <tr>
@@ -62,7 +68,13 @@
                         <h3>Scans</h3>
                         <table class="table" id="scan-table">
                             <thead></thead>
-                            <tbody></tbody>
+                            <tbody>
+                            <template id="scan-tr-template">
+                                <tr class=scan>
+                                    <td class="name"/>"
+                                </tr>
+                            </template>
+                            </tbody>
                         </table>
                     </div>
                 </div>

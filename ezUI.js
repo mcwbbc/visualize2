@@ -112,14 +112,6 @@ function setActiveTR(index){
 
 function listProteins(){
     window.$.each(ezf.getProteins(), function () {
-        //console.log(JSON.stringify(this.name));
-        /*cntx.window.$('tbody','#protein-table').append("<tr class=protein accession-data=" + this.accession + ">" +
-                "<td>" + Number(this.protein_prob).toPrecision(4) + "</td>" +
-                "<td>" + this.name + "</td>" +
-                "<td>" + this.accession + "</td>" +
-                "<td>" + this.peptide_count + "</td>" +
-                "<td>" + this.scan_count + "</td>" +
-                "</tr>");*/
         var template = cntx.window.document.querySelector('#protein-tr-template');
         template.content.querySelector('.protein').setAttribute('accession-data', this.accession);
         template.content.querySelector('.pp').innerText = Number(this.protein_prob).toPrecision(4);
@@ -163,10 +155,16 @@ function listPeptides(accession) {
     cntx.window.$('tbody', '#peptide-table').html('');
     
     window.$.each(ezf.getPeptides(accession), function () {
-        cntx.window.$('tbody','#peptide-table').append("<tr class=peptide peptide-data=" + this +">" +
+        /*cntx.window.$('tbody','#peptide-table').append("<tr class=peptide peptide-data=" + this +">" +
             "<td>" + ezf.getScans(accession, this).length + "</td>" +
             "<td>" + this + "</td>" +
-            "</tr>");
+            "</tr>");*/
+        var template = cntx.window.document.querySelector('#peptide-tr-template');
+        template.content.querySelector('.peptide').setAttribute('peptide-data', this);
+        template.content.querySelector('.scan_count').innerText = ezf.getScans(accession, this).length;
+        template.content.querySelector('.sequence').innerText = this;
+        var clone = cntx.window.document.importNode(template.content, true);
+        cntx.window.$('tbody', '#peptide-table').append(clone);
     })
     addPeptideClick(accession);
     peptide_table = cntx.window.$('#peptide-table').DataTable({
