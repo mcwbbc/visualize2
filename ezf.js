@@ -12,7 +12,6 @@ function readEz2(file){
     var zipEntries = ez2.getEntries();
 
     zipEntries.forEach(function(entry){
-        //console.log(entry.toString());
         if(entry.entryName == 'protein_summary.xml'){
             var json = undefined;
             var text = ez2.readAsText('protein_summary.xml','utf8');
@@ -22,7 +21,6 @@ function readEz2(file){
                 if(err){ return console.log(err);}
             });
             saveProteins(json);
-            //console.log(JSON.stringify(json));
         }
         if(entry.entryName == 'scans.xml'){
             var json = undefined;
@@ -44,15 +42,12 @@ function readEz2(file){
                 if(err){ return console.log(err);}
             });
             saveFasta(json);
-            //console.log(JSON.stringify(json));
         }
     });
-    //return json;
 }
 
 function saveProteins(json){
     window.localStorage.clear();
-    //window.localStorage.setItem('proteins', JSON.stringify(json));
     var new_js = {};
     window.$.each(json, function(){
         new_js[this.accession] = updatePep2Scan(this);
@@ -60,7 +55,6 @@ function saveProteins(json){
         if(isNaN(this.protein_prob)){ this.protein_prob = this.protein_prophet}
 
     });
-    //window.localStorage.setItem('proteins', JSON.stringify(new_js));
     protein_js = new_js;
 }
 
@@ -71,7 +65,6 @@ function saveScans(json){
         new_js[this.raw_name] = this;
 
     });
-    //window.localStorage.setItem('scans', JSON.stringify(new_js));
     scan_js = new_js;
 }
 
@@ -85,7 +78,6 @@ function saveFasta(json){
 
 function getProteins(){
     return protein_js;
-    //return JSON.parse(window.localStorage.getItem('proteins'));
 }
 
 function getPeptides(protein){
@@ -100,7 +92,6 @@ function getPeptides(protein){
 
 function listAllPeptides(protein){
     var json = getProteins();
-    //console.log("peptides: " + JSON.stringify(json));
     var peptides = json[protein].peptides;
      if( typeof peptides === 'string'){
      peptides = [peptides];
@@ -138,13 +129,9 @@ function calculateCoverage(protein){
     //return empty if no sequence
     if(typeof fasta_js[protein] === 'undefined'){ return {"coverage": 0, "observed": 0, "total": 0  };}
     window.$.each(getPeptides(protein), function(i, val){
-        //console.log(val);
         var pat = RegExp(val, 'igm');
         var res = pat.exec(fasta_js[protein].sequence);
-        //console.log(fasta_js[protein].sequence );
-        //console.log(pat.source);
         if(res === null){return {};} //return empty if no match
-        //console.log("index: " + res.index);
         for(var i = 0; i < val.length; i++){
             seq_map[res.index + i] = 1;
         }

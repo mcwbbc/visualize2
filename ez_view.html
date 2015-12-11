@@ -91,32 +91,57 @@
                     <template id="scan-details-template">
                         <h3>Details</h3>
                         <div class=row>
-                            <div class=col-xs-3>Scan</div><div class="col-xs-6 name"></div>
+                            <div class=col-xs-3>Scan</div><div class="col-xs-6" id="detail-name"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>Protein</div><div class="col-xs-6 protein"></div>
+                            <div class=col-xs-3>Protein</div><div class="col-xs-6" id="detail-accession"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>Sequence</div><div class="col-xs-6 sequence"></div>
+                            <div class=col-xs-3>Sequence</div><div class="col-xs-6" id="detail-sequence"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>Peptide Prob</div><div class="col-xs-6 pep_prob"></div>
+                            <div class=col-xs-3>Peptide Prob</div><div class="col-xs-6" id="detail-pep_prb"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>PP Discriminant Score</div><div class="col-xs-6 pp_discrim"></div>
+                            <div class=col-xs-3>PP Discriminant Score</div><div class="col-xs-6" id="detail-pp_discrim"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>Charge</div><div class="col-xs-6 charge"></div>
+                            <div class=col-xs-3>Charge</div><div class="col-xs-6" id="detail-charge"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>Delta Cn</div><div class="col-xs-6 delta_cn"></div>
+                            <div class=col-xs-3>Delta Cn</div><div class="col-xs-6" id="detail-delta_cn"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>Mass</div><div class="col-xs-6 mass"></div>
+                            <div class=col-xs-3>Mass</div><div class="col-xs-6" id="detail-mass"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>TIC</div><div class="col-xs-6 tic"></div>
+                            <div class=col-xs-3>TIC</div><div class="col-xs-6" id="detail-tic"></div>
                         </div>
+                    </template>
+                    <template id="protein-details-template">
+                        <h3>Details</h3>
+                        <div class=row>
+                            <div class=col-xs-3>Description</div><div class="col-xs-9" id="detail-description"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Max XCorr</div><div class="col-xs-6" id="detail-max_xcorr"></div>
+                        </div>
+                            <div class=row><div class=col-xs-3>Total XCorr</div><div class="col-xs-6" id="detail-total_xcorr"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>Total TIC</div><div class="col-xs-6" id="detail-total_tic"></div>
+                        </div>
+                        <div class=row>
+                            <div class=col-xs-3>% Coverage</div><div class="col-xs-6" id="detail-coverage"></div>
+                        </div>
+
+                        <table class="table" id="detail-peptides-table">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </template>
+                    <template id="protein-details-peptides-tr">
+                        <tr ><td></td></tr>
                     </template>
                         <div  id="details" class="panel panel-default">
                             <div class="panel-body">
