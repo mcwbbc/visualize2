@@ -1,0 +1,37 @@
+<html>
+    <h3>Filters</h3>
+    <div class="row">
+        <div class="col-md-2">Protein Probability:</div>
+        <div class="col-md-6"><input type="text"  id="protein-prob-filter"/></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Peptide Count:</div>
+        <div class="col-md-6" ><input type="text"  id="pep-count-filter" /></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Scan Count:</div>
+        <div class="col-md-6" ><input type="text"  id="scan-count-filter" /></div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button id="filter-on" type="button" class="btn btn-success">Apply Filters</button>
+            <button id="filter-off" type="button" class="btn btn-danger">Clear Filters</button>
+        </div>
+    </div>
+<script>
+    $.fn.dataTable.ext.search.push(
+      function(settings, data, dataIndex){
+          var protein_prob_filter = $('#protein-prob-filter').val() * 1;
+          var protein_prob = data[0] * 1;
+          var scan_count_filter = $('#scan-count-filter').val() * 1;
+          var scan_count = data[4] * 1;
+          var pep_count_filter = $('#pep-count-filter').val() * 1;
+          var pep_count = data[3] * 1;
+
+          return(protein_prob >= protein_prob_filter &&
+                pep_count >= pep_count_filter &&
+                scan_count >= scan_count_filter);
+      }
+    );
+</script>
+</html>

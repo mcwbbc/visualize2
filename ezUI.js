@@ -2,9 +2,11 @@
 
 var gui = window.require('nw.gui');
 var ezf = require('./ezf');
+var filter = require('./filters');
 var peptide_table;
 var cntx;
 var protein_menu = new gui.Menu();
+var protein_data_table;
 
 function openEzView(file){
     cntx = gui.Window.open('./ez_view.html', {
@@ -12,7 +14,7 @@ function openEzView(file){
         title: 'Visualize',
         width: 800,
         height: 600,
-        toolbar: false,
+        toolbar: true,
         focus: true,
         fullscreen: false
     });
@@ -21,17 +23,63 @@ function openEzView(file){
     cntx.on('loaded', function(){
         listProteins();
         addProteinClick();
-        addProteinMenu()
+        addProteinMenu();
         addShortCuts();
+        addFilterClick();
     });
 
     cntx.on('resize', function(){
         cntx.window.$('#column-1').removeAttr('style');
         cntx.window.$('#column-2').removeAttr('style');
     });
+}
 
+function addFilterClick(){
+    cntx.window.$('#filter').click(function(){
+        window.$.get('./filters.html', function(html){
+            cntx.window.$('.panel-body', '#details').html(html);
+            cntx.window.$('#filter-on').click(function(){
+                var protein_val = cntx.window.$('#protein-prob-filter').val();
+                var pep_val = cntx.window.$('#pep-count-filter').val();
+                var scan_val = cntx.window.$('#scan-count-filter').val();
+                setFilterValues(protein_val, pep_val, scan_val);
+                filter.setProteinProbFilter(protein_val);
+                filter.setPeptideCountFilter(pep_val);
+                filter.setScanCountFilter(scan_val);
+                protein_data_table.draw();
+                var btn = cntx.window.$('#filter');
+                btn.removeClass('btn-primary');
+                btn.addClass('btn-warning');
+                setScanTotal();
+            });
+            cntx.window.$('#filter-off').click(function(){
+                setFilterValues(0,0,0);
+                filter.setPeptideCountFilter(0);
+                filter.setProteinProbFilter(0);
+                filter.setScanCountFilter(0);
+                protein_data_table.draw();
+                var btn = cntx.window.$('#filter');
+                btn.addClass('btn-primary');
+                btn.removeClass('btn-warning');
+                cntx.window.$('#total_scans_shown').text(100);
+            });
+        });
+    });
+}
 
+function setScanTotal(){
+    var scans_left = 0;
+    cntx.window.$('.scan_count', '.protein').each(function(){
+        scans_left += Number(window.$(this).text());
+    });
+    //cntx.window.$('#total_scans_shown').text(Number(100 * scans_left / ezf.totalScans()).toPrecision(2));
+    cntx.window.$('#total_scans_shown').text(Number(ezf.totalScans()));
+}
 
+function setFilterValues(prot, pep, scan){
+    cntx.window.$('#protein-prob-filter').val(prot);
+    cntx.window.$('#pep-count-filter').val(pep);
+    cntx.window.$('#scan-count-filter').val(scan);
 }
 
 function addShortCuts(){
@@ -40,7 +88,7 @@ function addShortCuts(){
             e.preventDefault();
             var i = getActiveTR();
             if(i > -1) {
-                console.log('change row');
+                //console.log('change row');
                 setActiveTR(i - 1);
                 updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
             }
@@ -49,7 +97,7 @@ function addShortCuts(){
             var i = getActiveTR();
             console.log('i: ' + i);
             if(i > -1) {
-                console.log('change row');
+                //console.log('change row');
                 setActiveTR(i + 1);
                 updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
             }
@@ -123,7 +171,7 @@ function listProteins(){
         cntx.window.$('tbody', '#protein-table').append(clone);
 
     });
-    cntx.window.$('#protein-table').DataTable({
+    protein_data_table = cntx.window.$('#protein-table').DataTable({
         "paging": false,
         "info": false,
         "order": [[0, "desc"],[4,"desc"],[3,"desc"]],
@@ -224,7 +272,7 @@ function updateScanDetails(scan){
         Number(ezf.getScanDetails(scan).tic).toPrecision(5) + "</div></div>";*/
     var template = cntx.window.document.querySelector('#scan-details-template');
     template.content.querySelector('#detail-name').innerText = ezf.getScanDetails(scan).name;
-    template.content.querySelector('#detail-protein').innerText = ezf.getScanDetails(scan).reference;
+    template.content.querySelector('#detail-accession').innerText = ezf.getScanDetails(scan).reference;
     template.content.querySelector('#detail-sequence').innerText = ezf.getScanDetails(scan).match_peptide;
     template.content.querySelector('#detail-pep_prob').innerText = Number(ezf.getScanDetails(scan).peptide_prob).toPrecision(2);
     template.content.querySelector('#detail-pp_discrim').innerText = Number(ezf.getScanDetails(scan).pp_discrim).toPrecision(2);

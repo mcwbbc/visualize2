@@ -68,3 +68,7 @@ p, img{
 .success, .info{
     color:black;
 }
+
+input{
+    color: black;
+}

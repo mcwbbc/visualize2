@@ -16,29 +16,43 @@
             <div class="col-xs-4" id="column-1">
                 <div class="row">
                     <div class="col-md-12" id="protein-list">
-                        <h3>Proteins</h3>
-                        <table class="table" id="protein-table">
-                            <thead>
-                            <tr>
-                                <th>Probability</th>
-                                <th>Name</th>
-                                <th>Accession</th>
-                                <th>Peptides</th>
-                                <th>Scans</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <template id="protein-tr-template">
-                                <tr class=protein accession-data="">
-                                    <td class="pp"/>
-                                    <td class="name"/>"
-                                    <td class="accession"/>
-                                    <td class="pep_count"/>
-                                    <td class="scan_count"/>
-                                </tr>
-                            </template>
-                            </tbody>
-                        </table>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <h3>Proteins</h3>
+                            </div>
+                            <div class="col-xs-6">
+                                <button type="button" class="btn btn-primary" id="filter" style="width:3em; z-index: 300;">
+                                    <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+                                </button>
+                                <span id="total_scans_shown">100</span>% of total Scans
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table" id="protein-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Probability</th>
+                                        <th>Name</th>
+                                        <th>Accession</th>
+                                        <th>Peptides</th>
+                                        <th>Scans</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <template id="protein-tr-template">
+                                        <tr class=protein accession-data="">
+                                            <td class="pp"/>
+                                            <td class="name"/>"
+                                            <td class="accession"/>
+                                            <td class="pep_count"/>
+                                            <td class="scan_count"/>
+                                        </tr>
+                                    </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -100,7 +114,7 @@
                             <div class=col-xs-3>Sequence</div><div class="col-xs-6" id="detail-sequence"></div>
                         </div>
                         <div class=row>
-                            <div class=col-xs-3>Peptide Prob</div><div class="col-xs-6" id="detail-pep_prb"></div>
+                            <div class=col-xs-3>Peptide Prob</div><div class="col-xs-6" id="detail-pep_prob"></div>
                         </div>
                         <div class=row>
                             <div class=col-xs-3>PP Discriminant Score</div><div class="col-xs-6" id="detail-pp_discrim"></div>

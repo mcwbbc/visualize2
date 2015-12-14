@@ -7,6 +7,7 @@ var protein_js = {};
 var scan_js = {};
 var fasta_js = {};
 
+// Initialize
 function readEz2(file){
     var ez2 = new zip(file);
     var zipEntries = ez2.getEntries();
@@ -46,6 +47,85 @@ function readEz2(file){
     });
 }
 
+function calculateCoverage(protein){
+    var seq_map = [];
+    var seq_count = 0;
+    //return empty if no sequence
+    if(typeof fasta_js[protein] === 'undefined'){ return {"coverage": 0, "observed": 0, "total": 0  };}
+    window.$.each(getPeptides(protein), function(i, val){
+        var pat = RegExp(val, 'igm');
+        var res = pat.exec(fasta_js[protein].sequence);
+        if(res === null){return {};} //return empty if no match
+        for(var i = 0; i < val.length; i++){
+            seq_map[res.index + i] = 1;
+        }
+    });
+    window.$.each(seq_map, function(i,v){ seq_count += (v || 0); })
+    return {"coverage": seq_count / fasta_js[protein].sequence.length,
+        "observed": seq_count,
+        "total": fasta_js[protein].sequence.length  }
+
+}
+
+
+
+function getProteins(){
+    return protein_js;
+}
+
+function getPeptides(protein){
+    var json = getProteins();
+    var peptides = [];
+    window.$.each(json[protein].pep2scan, function(seq, val){
+        peptides.push(seq);
+    })
+    return peptides;
+
+}
+
+function getScans(protein, sequence){
+    var json = getProteins();
+    var scans = [];
+    window.$.each(json[protein].pep2scan[sequence], function(index, val){
+        if(index == 'sequence'){
+
+        } else {
+            scans.push(val);
+        }
+    });
+    return scans;
+}
+
+function getFasta(protein){
+    var seq_array = fasta_js[protein].sequence.split('');
+    var seq = '';
+    while(seq_array.length >= 50 ){
+        seq += seq_array.splice(0,50).join('') + "<br />";
+    }
+    seq += seq_array.join('') + "<br />";
+    return ['>', protein, '|', fasta_js[protein].name, '|', fasta_js[protein].description].join(" ") + "<br />" +
+            seq;
+}
+
+function getProteinDetails(protein){
+    return protein_js[protein];
+}
+
+function getScanDetails(scan){
+    //added for backwards compatability
+    if(isNaN(scan_js[scan].peptide_prob)){ scan_js[scan].peptide_prob = scan_js[scan].peptide_prophet}
+    return scan_js[scan];
+}
+
+function listAllPeptides(protein){
+    var json = getProteins();
+    var peptides = json[protein].peptides;
+    if( typeof peptides === 'string'){
+        peptides = [peptides];
+    }
+    return peptides.sort();
+}
+
 function saveProteins(json){
     window.localStorage.clear();
     var new_js = {};
@@ -76,81 +156,8 @@ function saveFasta(json){
     fasta_js = new_js;
 }
 
-function getProteins(){
-    return protein_js;
-}
-
-function getPeptides(protein){
-    var json = getProteins();
-    var peptides = [];
-    window.$.each(json[protein].pep2scan, function(seq, val){
-        peptides.push(seq);
-    })
-    return peptides;
-
-}
-
-function listAllPeptides(protein){
-    var json = getProteins();
-    var peptides = json[protein].peptides;
-     if( typeof peptides === 'string'){
-     peptides = [peptides];
-     }
-     return peptides.sort();
-}
-
-function getScans(protein, sequence){
-    var json = getProteins();
-    var scans = [];
-    window.$.each(json[protein].pep2scan[sequence], function(index, val){
-        if(index == 'sequence'){
-
-        } else {
-            scans.push(val);
-        }
-    });
-    return scans;
-}
-
-function getFasta(protein){
-    var seq_array = fasta_js[protein].sequence.split('');
-    var seq = '';
-    while(seq_array.length >= 50 ){
-        seq += seq_array.splice(0,50).join('') + "<br />";
-    }
-    seq += seq_array.join('') + "<br />";
-    return ['>', protein, '|', fasta_js[protein].name, '|', fasta_js[protein].description].join(" ") + "<br />" +
-            seq;
-}
-
-function calculateCoverage(protein){
-    var seq_map = [];
-    var seq_count = 0;
-    //return empty if no sequence
-    if(typeof fasta_js[protein] === 'undefined'){ return {"coverage": 0, "observed": 0, "total": 0  };}
-    window.$.each(getPeptides(protein), function(i, val){
-        var pat = RegExp(val, 'igm');
-        var res = pat.exec(fasta_js[protein].sequence);
-        if(res === null){return {};} //return empty if no match
-        for(var i = 0; i < val.length; i++){
-            seq_map[res.index + i] = 1;
-        }
-    });
-    window.$.each(seq_map, function(i,v){ seq_count += (v || 0); })
-    return {"coverage": seq_count / fasta_js[protein].sequence.length,
-            "observed": seq_count,
-            "total": fasta_js[protein].sequence.length  }
-
-}
-
-function getProteinDetails(protein){
-    return protein_js[protein];
-}
-
-function getScanDetails(scan){
-    //added for backwards compatability
-    if(isNaN(scan_js[scan].peptide_prob)){ scan_js[scan].peptide_prob = scan_js[scan].peptide_prophet}
-    return scan_js[scan];
+function totalScans(){
+    return Object.keys(scan_js).length;
 }
 
 function updatePep2Scan(json){
@@ -171,5 +178,6 @@ module.exports = {
     getScanDetails: getScanDetails,
     listAllPeptides: listAllPeptides,
     getFasta: getFasta,
-    calculateCoverage: calculateCoverage
+    calculateCoverage: calculateCoverage,
+    totalScans: totalScans
 };
