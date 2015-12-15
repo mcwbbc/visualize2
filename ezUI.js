@@ -38,11 +38,11 @@ function addFilterClick(){
     cntx.window.$('#filter').click(function(){
         window.$.get('./filters.html', function(html){
             cntx.window.$('.panel-body', '#details').html(html);
+            setFilterValues(filter.getProteinProbFilter(), filter.getPeptideCountFilter(), filter.getScanCountFiler());
             cntx.window.$('#filter-on').click(function(){
                 var protein_val = cntx.window.$('#protein-prob-filter').val();
                 var pep_val = cntx.window.$('#pep-count-filter').val();
                 var scan_val = cntx.window.$('#scan-count-filter').val();
-                setFilterValues(protein_val, pep_val, scan_val);
                 filter.setProteinProbFilter(protein_val);
                 filter.setPeptideCountFilter(pep_val);
                 filter.setScanCountFilter(scan_val);
@@ -72,8 +72,8 @@ function setScanTotal(){
     cntx.window.$('.scan_count', '.protein').each(function(){
         scans_left += Number(window.$(this).text());
     });
-    //cntx.window.$('#total_scans_shown').text(Number(100 * scans_left / ezf.totalScans()).toPrecision(2));
-    cntx.window.$('#total_scans_shown').text(Number(ezf.totalScans()));
+    cntx.window.$('#total_scans_shown').text(Number(100 * scans_left / ezf.totalScans()).toPrecision(2));
+    //cntx.window.$('#total_scans_shown').text(Number(scans_left));
 }
 
 function setFilterValues(prot, pep, scan){
@@ -211,12 +211,12 @@ function listPeptides(accession) {
         cntx.window.$('tbody', '#peptide-table').append(clone);
     })
     addPeptideClick(accession);
-    peptide_table = cntx.window.$('#peptide-table').DataTable({
+    /*peptide_table = cntx.window.$('#peptide-table').DataTable({
         "paging": false,
         "info": false,
         "order": [[0, "desc"]],
         "dom": ''
-    });
+    });*/
 }
 
 function addPeptideClick(accession){
