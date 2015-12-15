@@ -14,7 +14,7 @@ function openEzView(file){
         title: 'Visualize',
         width: 800,
         height: 600,
-        toolbar: true,
+        toolbar: false,
         focus: true,
         fullscreen: false
     });
