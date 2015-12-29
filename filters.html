@@ -1,21 +1,56 @@
 <html>
     <h3>Filters</h3>
     <div class="row">
-        <div class="col-md-2">Protein Probability:</div>
-        <div class="col-md-6"><input type="text"  id="protein-prob-filter"/></div>
-    </div>
-    <div class="row">
-        <div class="col-md-2">Peptide Count:</div>
-        <div class="col-md-6" ><input type="text"  id="pep-count-filter" /></div>
-    </div>
-    <div class="row">
-        <div class="col-md-2">Scan Count:</div>
-        <div class="col-md-6" ><input type="text"  id="scan-count-filter" /></div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <button id="filter-on" type="button" class="btn btn-success">Apply Filters</button>
-            <button id="filter-off" type="button" class="btn btn-danger">Clear Filters</button>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-4">Protein Probability &ge;:</div>
+                <div class="col-md-6"><input type="text"  id="protein-prob-filter"/></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Peptide Count &ge;:</div>
+                <div class="col-md-6" ><input type="text"  id="pep-count-filter" /></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">Scan Count &ge;:</div>
+                <div class="col-md-6" ><input type="text"  id="scan-count-filter" /></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button id="filter-on" type="button" class="btn btn-success">Apply Filters</button>
+                    <button id="filter-off" type="button" class="btn btn-danger">Clear Filters</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-3">Modifications:</div>
+                <div class="col-md-9">
+                    <input type="text" readonly placeholder="modifications" id="modification-filter" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                        <div class="btn-group mod-filter-group">
+                            <button type="button" class="btn btn-primary" id="filter-mod-0">*</button>
+                            <button type="button" class="btn btn-primary" id="filter-mod-1">#</button>
+                            <button type="button" class="btn btn-primary" id="filter-mod-2">@</button>
+                            <button type="button" class="btn btn-primary" id="filter-mod-3">^</button>
+                            <button type="button" class="btn btn-primary" id="filter-mod-4">~</button>
+                            <button type="button" class="btn btn-primary" id="filter-mod-5">$</button>
+                            <button type="button" class="btn btn-primary" id="filter-mod-6">]</button>
+                            <button type="button" class="btn btn-primary" id="filter-mod-7">[</button>
+                        </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-group mod-filter-group">
+                        <!--<button type="button" class="btn btn-primary" id="filter-and">and</button>-->
+                        <!--<button type="button" class="btn btn-primary" id="filter-or">or</button>-->
+                    </div>
+                    <button type="button" class="btn btn-warning" id="mod-reset">reset</button>
+                </div>
+            </div>
         </div>
     </div>
 <script>
@@ -28,9 +63,21 @@
           var pep_count_filter = $('#pep-count-filter').val() * 1;
           var pep_count = data[3] * 1;
 
+          var mod_bool = true;
+          var mods_hash = {"*": 0, "#": 1, "@": 2, "^": 3, "~": 4, "$": 5, "]": 6, "[": 7};
+          var mods = $('#modification-filter').val().split('');
+          if(mods.length > 0){
+              mod_bool = false;
+              $.each(mods,function(i, value){
+                  mod_bool = mod_bool || data[5 + mods_hash[value]] * 1 > 0;
+              })
+          }
+
+
+
           return(protein_prob >= protein_prob_filter &&
                 pep_count >= pep_count_filter &&
-                scan_count >= scan_count_filter);
+                scan_count >= scan_count_filter && mod_bool);
       }
     );
 </script>

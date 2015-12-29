@@ -1,6 +1,7 @@
 var protein_prob_filter = 0;
 var scan_count_filter = 0;
 var peptide_count_filter = 0;
+var modification_filter = '';
 
 function setProteinProbFilter(val){
     protein_prob_filter = val;
@@ -12,6 +13,10 @@ function setScanCountFilter(val){
 
 function setPeptideCountFilter(val){
     peptide_count_filter = val;
+}
+
+function setModificationFilter(val){
+    modification_filter = val;
 }
 
 function getProteinProbFilter(){
@@ -26,11 +31,17 @@ function getPeptideCountFilter(){
     return peptide_count_filter;
 }
 
+function getModificationFilter(){
+    return modification_filter;
+}
+
 module.exports = {
     setProteinProbFilter: setProteinProbFilter,
     setScanCountFilter: setScanCountFilter,
     setPeptideCountFilter: setPeptideCountFilter,
     getProteinProbFilter: getProteinProbFilter,
     getScanCountFiler: getScanCountFiler,
-    getPeptideCountFilter: getPeptideCountFilter
+    getPeptideCountFilter: getPeptideCountFilter,
+    setModificationFilter: setModificationFilter,
+    getModificationFilter: getModificationFilter
 }

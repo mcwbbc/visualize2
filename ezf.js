@@ -22,6 +22,9 @@ function readEz2(file){
                 if(err){ return console.log(err);}
             });
             saveProteins(json);
+            fs.writeFile('./test.updated.json', JSON.stringify(protein_js), function(err){
+                if(err){ return console.log(err);}
+            });
         }
         if(entry.entryName == 'scans.xml'){
             var json = undefined;
@@ -131,6 +134,7 @@ function saveProteins(json){
     var new_js = {};
     window.$.each(json, function(){
         new_js[this.accession] = updatePep2Scan(this);
+        new_js[this.accession] = updateModifications(this);
         //backwards compatability
         if(isNaN(this.protein_prob)){ this.protein_prob = this.protein_prophet}
 
@@ -158,6 +162,22 @@ function saveFasta(json){
 
 function totalScans(){
     return Object.keys(scan_js).length;
+}
+
+function updateModifications(json){
+    var peptides = json.peptides;
+    if(typeof peptides === 'string'){
+        peptides = [peptides];
+    }
+    var mods_json = {"*": 0, "#": 0, "@": 0, "^": 0, "~": 0, "$": 0, "]": 0, "[": 0};
+    window.$.each(peptides, function(i, pep){
+        window.$.each(mods_json, function(mod, v){
+            var pat = RegExp('\\' + mod);
+            if(pat.test(pep)){ mods_json[mod] += 1; }
+        });
+    });
+    json.modifications = mods_json;
+    return json;
 }
 
 function updatePep2Scan(json){

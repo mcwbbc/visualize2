@@ -38,14 +38,20 @@ function addFilterClick(){
     cntx.window.$('#filter').click(function(){
         window.$.get('./filters.html', function(html){
             cntx.window.$('.panel-body', '#details').html(html);
-            setFilterValues(filter.getProteinProbFilter(), filter.getPeptideCountFilter(), filter.getScanCountFiler());
+            setFilterValues(filter.getProteinProbFilter(),
+                filter.getPeptideCountFilter(),
+                filter.getScanCountFiler(),
+                filter.getModificationFilter());
+            enableModificationFilter();
             cntx.window.$('#filter-on').click(function(){
                 var protein_val = cntx.window.$('#protein-prob-filter').val();
                 var pep_val = cntx.window.$('#pep-count-filter').val();
                 var scan_val = cntx.window.$('#scan-count-filter').val();
+                var mod_val = cntx.window.$('#modification-filter').val();
                 filter.setProteinProbFilter(protein_val);
                 filter.setPeptideCountFilter(pep_val);
                 filter.setScanCountFilter(scan_val);
+                filter.setModificationFilter(mod_val);
                 protein_data_table.draw();
                 var btn = cntx.window.$('#filter');
                 btn.removeClass('btn-primary');
@@ -53,7 +59,7 @@ function addFilterClick(){
                 setScanTotal();
             });
             cntx.window.$('#filter-off').click(function(){
-                setFilterValues(0,0,0);
+                setFilterValues(0,0,0,'');
                 filter.setPeptideCountFilter(0);
                 filter.setProteinProbFilter(0);
                 filter.setScanCountFilter(0);
@@ -67,6 +73,21 @@ function addFilterClick(){
     });
 }
 
+function enableModificationFilter(){
+    var mod_filter = cntx.window.$('#modification-filter');
+    cntx.window.$('button', '.mod-filter-group').click(function(){
+        var text = mod_filter.val();
+        console.log(text);
+        text += window.$(this).text();
+        console.log(text);
+        mod_filter.val(text);
+    });
+    cntx.window.$('#mod-reset').click(function(){
+        mod_filter.val('');
+    });
+    return;
+}
+
 function setScanTotal(){
     var scans_left = 0;
     cntx.window.$('.scan_count', '.protein').each(function(){
@@ -76,10 +97,11 @@ function setScanTotal(){
     //cntx.window.$('#total_scans_shown').text(Number(scans_left));
 }
 
-function setFilterValues(prot, pep, scan){
+function setFilterValues(prot, pep, scan, mod){
     cntx.window.$('#protein-prob-filter').val(prot);
     cntx.window.$('#pep-count-filter').val(pep);
     cntx.window.$('#scan-count-filter').val(scan);
+    cntx.window.$('#modification-filter').val(mod)
 }
 
 function addShortCuts(){
@@ -145,8 +167,7 @@ function addGlobalShortCuts(){
 
 function getActiveTR(){
     var tr = cntx.window.$('.success', '#protein-table');
-    console.log('row: ' + tr.index());
-   return tr.index();
+    return tr.index();
 }
 
 function setActiveTR(index){
@@ -167,6 +188,14 @@ function listProteins(){
         template.content.querySelector('.accession').innerText = this.accession;
         template.content.querySelector('.pep_count').innerText = this.peptide_count;
         template.content.querySelector('.scan_count').innerText = this.scan_count;
+        template.content.querySelector('.mod-0').innerText = this.modifications['*'];
+        template.content.querySelector('.mod-1').innerText = this.modifications['#'];
+        template.content.querySelector('.mod-2').innerText = this.modifications['@'];
+        template.content.querySelector('.mod-3').innerText = this.modifications['^'];
+        template.content.querySelector('.mod-4').innerText = this.modifications['~'];
+        template.content.querySelector('.mod-5').innerText = this.modifications['$'];
+        template.content.querySelector('.mod-6').innerText = this.modifications[']'];
+        template.content.querySelector('.mod-7').innerText = this.modifications['['];
         var clone = cntx.window.document.importNode(template.content, true);
         cntx.window.$('tbody', '#protein-table').append(clone);
 

@@ -6,13 +6,17 @@ body{
     background: #C0ECFC;
     color: white;
     font-family: 'Signika';
-    -webkit-app-region: drag
+    -webkit-app-region: drag;
+    overflow: hidden;
+}
+
+body:hover{
+    overflow: scroll;
 }
 
 button, select{
     -webkit-app-region: no-drag;
     width: 10em;
-    margin: 0.3em;
 }
 
 p, img{
@@ -22,6 +26,10 @@ p, img{
 
 #main {
     padding-top: 2.3em;
+}
+
+.mod-filter-group .btn{
+    width: 3em;
 }
 
 #peptide-list, #scan-list{
@@ -63,6 +71,10 @@ p, img{
 
 #protein-table tr:hover, #scan-table tr:hover, #peptide-table tr:hover{
     cursor: pointer;
+}
+
+.row{
+    margin-bottom: .5em;
 }
 
 .success, .info{
