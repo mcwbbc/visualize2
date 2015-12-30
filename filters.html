@@ -30,7 +30,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                        <div class="btn-group mod-filter-group">
+                        <div class="btn-group mod-filter-group" id="filter-mod-sym">
                             <button type="button" class="btn btn-primary" id="filter-mod-0">*</button>
                             <button type="button" class="btn btn-primary" id="filter-mod-1">#</button>
                             <button type="button" class="btn btn-primary" id="filter-mod-2">@</button>
@@ -44,9 +44,9 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="btn-group mod-filter-group">
-                        <!--<button type="button" class="btn btn-primary" id="filter-and">and</button>-->
-                        <!--<button type="button" class="btn btn-primary" id="filter-or">or</button>-->
+                    <div class="btn-group mod-filter-group" id="filter-mod-logic">
+                        <button type="button" class="btn btn-primary" id="filter-and" disabled>and</button>
+                        <button type="button" class="btn btn-primary" id="filter-or" disabled>or</button>
                     </div>
                     <button type="button" class="btn btn-warning" id="mod-reset">reset</button>
                 </div>
@@ -65,15 +65,19 @@
 
           var mod_bool = true;
           var mods_hash = {"*": 0, "#": 1, "@": 2, "^": 3, "~": 4, "$": 5, "]": 6, "[": 7};
-          var mods = $('#modification-filter').val().split('');
-          if(mods.length > 0){
+          var mods_line = $('#modification-filter').val();
+          var mods = mods_line.split(/and|or/);
+          if(mods_line != ''){
               mod_bool = false;
+              var mod_logic = /and|or/g.exec(mods_line);
               $.each(mods,function(i, value){
-                  mod_bool = mod_bool || data[5 + mods_hash[value]] * 1 > 0;
+                  if(i === 0 || mod_logic[i - 1] === "or"){
+                      mod_bool = mod_bool || data[5 + mods_hash[value]] * 1 > 0;
+                  }else {
+                      mod_bool = mod_bool && data[5 + mods_hash[value]] * 1 > 0;
+                  }
               })
           }
-
-
 
           return(protein_prob >= protein_prob_filter &&
                 pep_count >= pep_count_filter &&

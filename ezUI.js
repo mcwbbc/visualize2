@@ -67,6 +67,8 @@ function addFilterClick(){
                 var btn = cntx.window.$('#filter');
                 btn.addClass('btn-primary');
                 btn.removeClass('btn-warning');
+                cntx.window.$('button', '#filter-mod-sym').prop('disabled', false);
+                cntx.window.$('button', '#filter-mod-logic').prop('disabled', true);
                 cntx.window.$('#total_scans_shown').text(100);
             });
         });
@@ -81,9 +83,12 @@ function enableModificationFilter(){
         text += window.$(this).text();
         console.log(text);
         mod_filter.val(text);
+        cntx.window.$('button', '.mod-filter-group').prop('disabled', function(i, v){ return !v; });
     });
     cntx.window.$('#mod-reset').click(function(){
         mod_filter.val('');
+        cntx.window.$('button', '#filter-mod-sym').prop('disabled', false);
+        cntx.window.$('button', '#filter-mod-logic').prop('disabled', true);
     });
     return;
 }
