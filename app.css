@@ -2,8 +2,16 @@ html#index{
     border-radius: 15px;
 }
 
+html, body, .full-height {
+    height: 100%;
+}
+
+#column-1{
+    background-color: whitesmoke;
+}
 body{
-    background: #C0ECFC;
+    /*background: #C0ECFC;*/
+    background: #eeeeee;
     color: white;
     font-family: 'Signika';
     -webkit-app-region: drag;
@@ -33,8 +41,7 @@ p, img{
 }
 
 #peptide-list, #scan-list{
-    min-height: 40%;
-    max-height: 40%;
+    height: 100%;
     overflow: scroll;
 }
 
@@ -50,15 +57,17 @@ p, img{
 
 #protein-list{
     padding-top: 0.5em;
-    color: whitesmoke;
     height: 100%;
-    background-color: #204d74;
-    border-right: #e2e2e2 double;
+    /*background-color: white;
+    color: black;
+    */background-color: #204d74;
+      color: whitesmoke;
+
     overflow: scroll;
 }
 
 #details{
-    height: 56%;
+    height: 96%;
     overflow: scroll;
     color:whitesmoke;
     background-color: #2860AA;

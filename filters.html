@@ -3,6 +3,12 @@
     <div class="row">
         <div class="col-md-6">
             <div class="row">
+                <div class="col-md-12">
+                    <button id="filter-on" type="button" class="btn btn-success">Apply Filters</button>
+                    <button id="filter-off" type="button" class="btn btn-danger">Clear Filters</button>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-4">Protein Probability &ge;:</div>
                 <div class="col-md-6"><input type="text"  id="protein-prob-filter"/></div>
             </div>
@@ -15,10 +21,8 @@
                 <div class="col-md-6" ><input type="text"  id="scan-count-filter" /></div>
             </div>
             <div class="row">
-                <div class="col-md-12">
-                    <button id="filter-on" type="button" class="btn btn-success">Apply Filters</button>
-                    <button id="filter-off" type="button" class="btn btn-danger">Clear Filters</button>
-                </div>
+                <div class="col-md-4">Hide decoy and contaminants</div>
+                <div class="col-md-6"><input type="checkbox" name="decoy-cont-filter"/> On</div>
             </div>
         </div>
         <div class="col-md-6">
@@ -31,22 +35,22 @@
             <div class="row">
                 <div class="col-md-12">
                         <div class="btn-group mod-filter-group" id="filter-mod-sym">
-                            <button type="button" class="btn btn-primary" id="filter-mod-0">*</button>
-                            <button type="button" class="btn btn-primary" id="filter-mod-1">#</button>
-                            <button type="button" class="btn btn-primary" id="filter-mod-2">@</button>
-                            <button type="button" class="btn btn-primary" id="filter-mod-3">^</button>
-                            <button type="button" class="btn btn-primary" id="filter-mod-4">~</button>
-                            <button type="button" class="btn btn-primary" id="filter-mod-5">$</button>
-                            <button type="button" class="btn btn-primary" id="filter-mod-6">]</button>
-                            <button type="button" class="btn btn-primary" id="filter-mod-7">[</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-0">*</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-1">#</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-2">@</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-3">^</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-4">~</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-5">$</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-6">]</button>
+                            <button type="button" class="btn btn-default" id="filter-mod-7">[</button>
                         </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <div class="btn-group mod-filter-group" id="filter-mod-logic">
-                        <button type="button" class="btn btn-primary" id="filter-and" disabled>and</button>
-                        <button type="button" class="btn btn-primary" id="filter-or" disabled>or</button>
+                        <button type="button" class="btn btn-default" id="filter-and" disabled>and</button>
+                        <button type="button" class="btn btn-default" id="filter-or" disabled>or</button>
                     </div>
                     <button type="button" class="btn btn-warning" id="mod-reset">reset</button>
                 </div>
@@ -79,9 +83,14 @@
               })
           }
 
+          var cont_decoy_bool = true;
+          if($('[name=decoy-cont-filter]').prop("checked")){
+              cont_decoy_bool = !/\b(DECOY|CONTAM)/.test(data[1]);
+          }
+
           return(protein_prob >= protein_prob_filter &&
                 pep_count >= pep_count_filter &&
-                scan_count >= scan_count_filter && mod_bool);
+                scan_count >= scan_count_filter && mod_bool && cont_decoy_bool);
       }
     );
 </script>

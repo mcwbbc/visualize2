@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>Visualize v2</title>
@@ -11,17 +12,17 @@
     <script type="text/javascript" src="bower_components/datatables/media/js/dataTables.bootstrap.min.js"></script>
 </head>
 <body>
-    <div class="container-fluid" id="report">
-        <div class="row">
-            <div class="col-xs-4" id="column-1">
-                <div class="row">
-                    <div class="col-md-12" id="protein-list">
+    <div class="container-fluid full-height" id="report">
+        <div class="row full-height" id="main-row">
+            <div class="col-xs-4 full-height" id="column-1">
+                <div class="row full-height">
+                    <div class="col-md-12 full-height" id="protein-list">
                         <div class="row">
-                            <div class="col-xs-6">
+                            <div class="col-xs-6 ">
                                 <h3>Proteins</h3>
                             </div>
                             <div class="col-xs-6">
-                                <button type="button" class="btn btn-primary" id="filter" style="width:3em; z-index: 300;">
+                                <button type="button" class="btn btn-default" id="filter" style="width:3em; z-index: 300;">
                                     <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
                                 </button>
                                 <span id="total_scans_shown">100</span>% of total Scans
@@ -73,9 +74,9 @@
                 </div>
 
             </div>
-            <div class="col-xs-8" id="column-2">
-                <div class="row">
-                    <div class="col-sm-6">
+            <div class="col-xs-8 full-height" id="column-2">
+                <div class="row" style="height: 40%">
+                    <div class="col-sm-6 full-height">
                         <div  id="peptide-list" class="panel panel-default">
                             <div class="panel-body">
                                 <h3>Peptides</h3>
@@ -98,7 +99,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 full-height">
                         <div  id="scan-list" class="panel panel-default">
                             <div class="panel-body">
                                 <h3>Scans</h3>
@@ -116,8 +117,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
+                <div class="row" style="height: 60%;">
+                    <div class="col-md-12 full-height">
                     <template id="scan-details-template">
                         <h3>Details</h3>
                         <div class=row>

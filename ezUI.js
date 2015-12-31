@@ -14,7 +14,7 @@ function openEzView(file){
         title: 'Visualize',
         width: 800,
         height: 600,
-        toolbar: false,
+        toolbar: true,
         focus: true,
         fullscreen: false
     });
@@ -41,17 +41,20 @@ function addFilterClick(){
             setFilterValues(filter.getProteinProbFilter(),
                 filter.getPeptideCountFilter(),
                 filter.getScanCountFiler(),
-                filter.getModificationFilter());
+                filter.getModificationFilter(),
+                filter.getDecoyFilter());
             enableModificationFilter();
             cntx.window.$('#filter-on').click(function(){
                 var protein_val = cntx.window.$('#protein-prob-filter').val();
                 var pep_val = cntx.window.$('#pep-count-filter').val();
                 var scan_val = cntx.window.$('#scan-count-filter').val();
                 var mod_val = cntx.window.$('#modification-filter').val();
+                var decoy_prop = cntx.window.$('[name=decoy-cont-filter]').prop('checked');
                 filter.setProteinProbFilter(protein_val);
                 filter.setPeptideCountFilter(pep_val);
                 filter.setScanCountFilter(scan_val);
                 filter.setModificationFilter(mod_val);
+                filter.setDecoyFilter(decoy_prop);
                 protein_data_table.draw();
                 var btn = cntx.window.$('#filter');
                 btn.removeClass('btn-primary');
@@ -59,10 +62,11 @@ function addFilterClick(){
                 setScanTotal();
             });
             cntx.window.$('#filter-off').click(function(){
-                setFilterValues(0,0,0,'');
+                setFilterValues(0,0,0,'', false);
                 filter.setPeptideCountFilter(0);
                 filter.setProteinProbFilter(0);
                 filter.setScanCountFilter(0);
+                filter.setDecoyFilter(false);
                 protein_data_table.draw();
                 var btn = cntx.window.$('#filter');
                 btn.addClass('btn-primary');
@@ -102,11 +106,12 @@ function setScanTotal(){
     //cntx.window.$('#total_scans_shown').text(Number(scans_left));
 }
 
-function setFilterValues(prot, pep, scan, mod){
+function setFilterValues(prot, pep, scan, mod, decoy){
     cntx.window.$('#protein-prob-filter').val(prot);
     cntx.window.$('#pep-count-filter').val(pep);
     cntx.window.$('#scan-count-filter').val(scan);
     cntx.window.$('#modification-filter').val(mod)
+    cntx.window.$('[name=decoy-cont-filter]').prop('checked', decoy)
 }
 
 function addShortCuts(){
@@ -131,7 +136,7 @@ function addShortCuts(){
         }
     })
 }
-
+/*
 function addGlobalShortCuts(){
     var upKey = {
         key: "Up",
@@ -169,7 +174,7 @@ function addGlobalShortCuts(){
     var downEvent = new gui.Shortcut(keyDown);
     gui.App.registerGlobalHotKey(downEvent);
 }
-
+*/
 function getActiveTR(){
     var tr = cntx.window.$('.success', '#protein-table');
     return tr.index();
