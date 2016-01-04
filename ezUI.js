@@ -12,9 +12,9 @@ function openEzView(file){
     cntx = gui.Window.open('./ez_view.html', {
         position: 'center',
         title: 'Visualize',
-        width: 800,
-        height: 600,
-        toolbar: true,
+        width: 1300,
+        height: 700,
+        toolbar: false,
         focus: true,
         fullscreen: false
     });
