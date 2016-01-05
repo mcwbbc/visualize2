@@ -407,7 +407,7 @@ function go2UniProt(accession){
 function showSequence(accession){
     var html = "<h3>Details</h3>";
     html += "<div class=col-xs-12>" + ezf.getFasta(accession) + "</div>";
-    cntx.window.$('#details').html(html);
+    cntx.window.$('.panel-body', '#details').html(html);
 }
 
 module.exports = {
