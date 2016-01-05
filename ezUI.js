@@ -120,16 +120,13 @@ function addShortCuts(){
             e.preventDefault();
             var i = getActiveTR();
             if(i > -1) {
-                //console.log('change row');
                 setActiveTR(i - 1);
                 updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
             }
         } else if(e.which === 40){ //arrow down
             e.preventDefault();
             var i = getActiveTR();
-            console.log('i: ' + i);
             if(i > -1) {
-                //console.log('change row');
                 setActiveTR(i + 1);
                 updateProteinInfo(cntx.window.$('.success', '#protein-table').attr('accession-data'));
             }
@@ -182,7 +179,6 @@ function getActiveTR(){
 
 function setActiveTR(index){
     cntx.window.$('.success').removeClass('success');
-    console.log('l: ' + cntx.window.$('tr', '#protein-table tbody').length);
     if(index >= cntx.window.$('tr', '#protein-table tbody').length){ index = 0;}
     var htmlTR = cntx.window.$('tr', '#protein-table tbody').get(Number(index));
     cntx.window.$(htmlTR).addClass('success');
@@ -351,6 +347,7 @@ function updateProteinDetails(accession){
     template.content.querySelector('#detail-max_xcorr').innerText = ezf.getProteinDetails(accession).max_xcorr;
     template.content.querySelector('#detail-total_xcorr').innerText = ezf.getProteinDetails(accession).total_xcorr;
     template.content.querySelector('#detail-total_tic').innerText = ezf.getProteinDetails(accession).total_tic;
+    template.content.querySelector('#detail-gravy').innerText = ezf.calculateGravy(accession).toPrecision(5);
     template.content.querySelector('#detail-coverage').innerText =
     coverage.observed + " of " +
     coverage.total + " aa. " +

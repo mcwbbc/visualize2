@@ -3,6 +3,7 @@
 var zip = require('adm-zip');
 var xml = require('pixl-xml');
 var fs = require('fs');
+var tools = require('./tools');
 var protein_js = {};
 var scan_js = {};
 var fasta_js = {};
@@ -70,7 +71,9 @@ function calculateCoverage(protein){
 
 }
 
-
+function calculateGravy(protein){
+    return tools.calculateGravy(fasta_js[protein].sequence);
+}
 
 function getProteins(){
     return protein_js;
@@ -199,5 +202,6 @@ module.exports = {
     listAllPeptides: listAllPeptides,
     getFasta: getFasta,
     calculateCoverage: calculateCoverage,
+    calculateGravy: calculateGravy,
     totalScans: totalScans
 };
