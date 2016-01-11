@@ -5,12 +5,11 @@
   "main": "index.html",
   "window": {
     "title": "Visualize",
-    "frame": false,
-    "toolbar": false,
-    "transparent": true,
+    "frame": true,
+    "toolbar": true,
     "focus": true,
-    "width": 300,
-    "height": 150
+    "width": 1300,
+    "height": 700
   },
   "author": "Andrew Vallejos",
   "license": "ISC",
@@ -18,5 +17,10 @@
     "adm-zip": "^0.4.7",
     "pixl-xml": "^1.0.4",
     "xml2js": "^0.4.15"
+  },
+  "devDependencies": {
+    "cucumber": "^0.9.2",
+    "wd": "^0.4.0",
+    "webdriver-manager": "^8.0.0"
   }
 }
