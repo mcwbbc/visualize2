@@ -75,6 +75,10 @@ function calculateGravy(protein){
     return tools.calculateGravy(fasta_js[protein].sequence);
 }
 
+function calculatePH(protein){
+    return tools.calculatePI(fasta_js[protein].sequence);
+}
+
 function getProteins(){
     return protein_js;
 }
@@ -203,5 +207,6 @@ module.exports = {
     getFasta: getFasta,
     calculateCoverage: calculateCoverage,
     calculateGravy: calculateGravy,
+    calculatePH: calculatePH,
     totalScans: totalScans
 };

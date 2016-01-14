@@ -13,6 +13,7 @@ function openEzView(file){
     ezf.readEz2(file);
     window.$('#main').toggle();
     window.$('#report').toggle(function(){
+        gui.Window.get().title = "Visualize 2.0: " + file;
         listProteins();
         addProteinClick();
         addProteinMenu();
@@ -336,6 +337,7 @@ function updateProteinDetails(accession){
     template.content.querySelector('#detail-total_xcorr').innerText = ezf.getProteinDetails(accession).total_xcorr;
     template.content.querySelector('#detail-total_tic').innerText = ezf.getProteinDetails(accession).total_tic;
     template.content.querySelector('#detail-gravy').innerText = ezf.calculateGravy(accession).toPrecision(5);
+    template.content.querySelector('#detail-pi').innerText = ezf.calculatePH(accession).toPrecision(5);
     template.content.querySelector('#detail-coverage').innerText =
     coverage.observed + " of " +
     coverage.total + " aa. " +
