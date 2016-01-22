@@ -90,8 +90,8 @@ var pka = {
 function calculateGravy(sequence){
     if(typeof sequence === 'string'){
         var total_gravy = 0;
-        window.$.each(sequence.split(''), function(i, aa){
-            total_gravy += gravy[aa];
+        window.$.each(composition(sequence), function(aa, count){
+            total_gravy += gravy[aa] * count;
         });
         return total_gravy / sequence.length;
     }

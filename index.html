@@ -3,13 +3,13 @@
 <head>
 <title>Visualize v2</title>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery-ui.min.css" />
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="bower_components/datatables/datatables.min.css" />
     <link rel="stylesheet" href="./app.css" />
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.js"></script>
-    <script type="text/javascript" src="bower_components/datatables/media/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="bower_components/datatables/media/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript" src="bower_components/datatables/datatables.min.js"></script>
 </head>
 <body>
 <input style="display:none;" id="fileDialog" type="file" accept=".ez2" />
@@ -60,6 +60,9 @@
                                         <th>Accession</th>
                                         <th>Peptides</th>
                                         <th>Scans</th>
+                                        <th>MWT</th>
+                                        <th>pI</th>
+                                        <th>GRAVY</th>
                                         <th>*</th>
                                         <th>#</th>
                                         <th>@</th>
@@ -78,6 +81,9 @@
                                             <td class="accession"/>
                                             <td class="pep_count"/>
                                             <td class="scan_count"/>
+                                            <td class="mwt"/>
+                                            <td class="pi"/>
+                                            <td class="gravy"/>
                                             <td class="mod-0"/>
                                             <td class="mod-1"/>
                                             <td class="mod-2"/>

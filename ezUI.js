@@ -183,6 +183,9 @@ function listProteins(){
         template.content.querySelector('.accession').innerText = this.accession;
         template.content.querySelector('.pep_count').innerText = this.peptide_count;
         template.content.querySelector('.scan_count').innerText = this.scan_count;
+        template.content.querySelector('.mwt').innerText = "0";
+        template.content.querySelector('.pi').innerText = ezf.calculatePH(this.accession).toPrecision(5);
+        template.content.querySelector('.gravy').innerText = ezf.calculateGravy(this.accession).toPrecision(5);
         template.content.querySelector('.mod-0').innerText = this.modifications['*'];
         template.content.querySelector('.mod-1').innerText = this.modifications['#'];
         template.content.querySelector('.mod-2').innerText = this.modifications['@'];
@@ -199,9 +202,10 @@ function listProteins(){
         "paging": false,
         "info": false,
         "order": [[0, "desc"],[4,"desc"],[3,"desc"]],
-        "dom": '<"top">f'
-
+        "dom": '<"top"<"col-xs-6"B><"col-xs-6">f>',
+        "buttons": ['copyHtml5','excelHtml5','pdfHtml5']
     });
+
 }
 
 function addProteinClick(){
