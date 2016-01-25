@@ -203,7 +203,12 @@ function listProteins(){
         "info": false,
         "order": [[0, "desc"],[4,"desc"],[3,"desc"]],
         "dom": '<"top"<"col-xs-6"B><"col-xs-6">f>',
-        "buttons": ['copyHtml5','excelHtml5','pdfHtml5']
+        "buttons": ['copyHtml5','excelHtml5','pdfHtml5'],
+        "columnDefs":[{
+            "targets":[8,9,10,11,12,13,14,15],
+            "visible": false,
+            "searchable": true
+        }]
     });
 
 }
