@@ -1,5 +1,57 @@
 'use strict';
 
+var avg_aa_mass = {
+    G: 57.0519,
+    A: 71.0788,
+    S: 87.0782,
+    P: 97.1167,
+    V: 99.1326,
+    T: 101.1051,
+    C: 103.1388,
+    I: 113.1594,
+    L: 113.1594,
+    N: 114.1038,
+    D: 115.0886,
+    Q: 128.1307,
+    K: 128.1741,
+    E: 129.1155,
+    M: 131.1926,
+    H: 137.1411,
+    F: 147.1766,
+    R: 156.1875,
+    Y: 163.1760,
+    W: 186.2132,
+    U: 150.0388,
+    O: 237.3018,
+    H2O: 18.01524
+};
+
+var mono_aa_mass = {
+    G: 57.02146,
+    A: 71.03711,
+    S: 87.03203,
+    P: 97.05276,
+    V: 99.06841,
+    T: 101.04768,
+    C: 103.00919,
+    I: 113.08406,
+    L: 113.08406,
+    N: 114.04293,
+    D: 115.02694,
+    Q: 128.05858,
+    K: 128.09497,
+    E: 129.04259,
+    M: 131.04049,
+    H: 137.05891,
+    F: 147.06841,
+    R: 156.10111,
+    Y: 163.06333,
+    W: 186.07931,
+    U: 150.953636,
+    O: 237.147727,
+    H2O: 18.01056
+};
+
 var gravy = {
     G: -0.4,
     A: 1.8,
@@ -98,6 +150,16 @@ function calculateGravy(sequence){
     return null;
 }
 
+function calculateMonoWeight(sequence){
+    if(typeof sequence === 'string'){
+        var mono_isotopic_weight = mono_aa_mass['H2O'];
+        window.$.each(composition(sequence), function(aa, count){
+            mono_isotopic_weight += mono_aa_mass[aa] * count;
+        });
+        return mono_isotopic_weight;
+    }
+}
+
 function calculatePI(sequence){
     if(typeof sequence === 'string'){
         var charge = 1000;
@@ -149,5 +211,6 @@ function composition(sequence){
 
 module.exports = {
     calculateGravy: calculateGravy,
+    calculateMonoWeight: calculateMonoWeight,
     calculatePI: calculatePI
 }

@@ -183,7 +183,7 @@ function listProteins(){
         template.content.querySelector('.accession').innerText = this.accession;
         template.content.querySelector('.pep_count').innerText = this.peptide_count;
         template.content.querySelector('.scan_count').innerText = this.scan_count;
-        template.content.querySelector('.mwt').innerText = "0";
+        template.content.querySelector('.mwt').innerText = ezf.calculateMonoWeight(this.accession).toPrecision(4);
         template.content.querySelector('.pi').innerText = ezf.calculatePH(this.accession).toPrecision(5);
         template.content.querySelector('.gravy').innerText = ezf.calculateGravy(this.accession).toPrecision(5);
         template.content.querySelector('.mod-0').innerText = this.modifications['*'];
@@ -345,6 +345,7 @@ function updateProteinDetails(accession){
     template.content.querySelector('#detail-max_xcorr').innerText = ezf.getProteinDetails(accession).max_xcorr;
     template.content.querySelector('#detail-total_xcorr').innerText = ezf.getProteinDetails(accession).total_xcorr;
     template.content.querySelector('#detail-total_tic').innerText = ezf.getProteinDetails(accession).total_tic;
+    template.content.querySelector('#detail-mwt').innerText = ezf.calculateMonoWeight(accession).toPrecision(4);
     template.content.querySelector('#detail-gravy').innerText = ezf.calculateGravy(accession).toPrecision(5);
     template.content.querySelector('#detail-pi').innerText = ezf.calculatePH(accession).toPrecision(5);
     template.content.querySelector('#detail-coverage').innerText =

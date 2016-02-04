@@ -55,7 +55,7 @@ function calculateCoverage(protein){
     var seq_map = [];
     var seq_count = 0;
     //return empty if no sequence
-    if(typeof fasta_js[protein] === 'undefined'){ return {"coverage": 0, "observed": 0, "total": 0  };}
+    if(typeof fasta_js[protein].sequence === 'undefined'){ return {"coverage": 0, "observed": 0, "total": 0  };}
     window.$.each(getPeptides(protein), function(i, val){
         var pat = RegExp(val, 'igm');
         var res = pat.exec(fasta_js[protein].sequence);
@@ -72,10 +72,20 @@ function calculateCoverage(protein){
 }
 
 function calculateGravy(protein){
+    //return 0 if there is no sequence
+    if(typeof fasta_js[protein].sequence === 'undefined'){ return NaN;}
     return tools.calculateGravy(fasta_js[protein].sequence);
 }
 
+function calculateMonoWeight(protein){
+    //return 0 if there is no sequence
+    if(typeof fasta_js[protein].sequence === 'undefined'){ return NaN;}
+    return tools.calculateMonoWeight(fasta_js[protein].sequence);
+}
+
 function calculatePH(protein){
+    //return 0 if there is no sequence
+    if(typeof fasta_js[protein].sequence === 'undefined'){ return NaN;}
     return tools.calculatePI(fasta_js[protein].sequence);
 }
 
@@ -207,6 +217,7 @@ module.exports = {
     getFasta: getFasta,
     calculateCoverage: calculateCoverage,
     calculateGravy: calculateGravy,
+    calculateMonoWeight: calculateMonoWeight,
     calculatePH: calculatePH,
     totalScans: totalScans
 };
