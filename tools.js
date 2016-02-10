@@ -147,7 +147,7 @@ function calculateGravy(sequence){
         });
         return total_gravy / sequence.length;
     }
-    return null;
+    return NaN;
 }
 
 function calculateMonoWeight(sequence){
@@ -158,6 +158,7 @@ function calculateMonoWeight(sequence){
         });
         return mono_isotopic_weight;
     }
+    return NaN;
 }
 
 function calculatePI(sequence){
@@ -198,7 +199,7 @@ function calculatePI(sequence){
         }//while
         return pH;
     }
-    return null;
+    return NaN;
 }
 
 function composition(sequence){
