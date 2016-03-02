@@ -176,7 +176,34 @@
                         <div class=row>
                             <div class=col-xs-3>TIC</div><div class="col-xs-6" id="detail-tic"></div>
                         </div>
+                        <button type="button" class="btn btn-default btn-xs" id="ion-toggle">
+                            Show Ions
+                        </button>
+                       <!-- <div class="col-xs-6"> -->
+                            <table class="table table-condensed" id="ion-core-table">
+                                <thead>
+                                <tr>
+                                    <th>AA</th>
+                                    <th>B</th>
+                                    <th>Mass</th>
+                                    <th>Y</th>
+                                    <th>Mass</th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        <!--</div>-->
                     </template>
+                    <template id="ion-core-tr">
+                        <tr class="ion-core">
+                            <td class="aa"></td>
+                            <td class="b-ion"></td>
+                            <td class="b-ion-mass"></td>
+                            <td class="y-ion"></td>
+                            <td class="y-ion-mass"></td>
+                        </tr>
+                    </template>
+
                     <template id="protein-details-template">
                         <h3>Details</h3>
                         <div class=row>

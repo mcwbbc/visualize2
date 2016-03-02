@@ -7,6 +7,7 @@ var tools = require('./tools');
 var protein_js = {};
 var scan_js = {};
 var fasta_js = {};
+var params_js = {};
 
 // Initialize
 function readEz2(file){
@@ -48,6 +49,17 @@ function readEz2(file){
             });
             saveFasta(json);
         }
+        if(entry.entryName == 'param.xml'){
+            var json = undefined;
+            var text = ez2.readAsText('param.xml','utf8');
+            json = xml.parse(text);
+
+            fs.writeFile('./test.params.xml', JSON.stringify(json), function(err){
+                if(err){return console.log(err);}
+            });
+            tools.setTools(json);
+            saveParams(json);
+        }
     });
 }
 
@@ -74,19 +86,27 @@ function calculateCoverage(protein){
 function calculateGravy(protein){
     //return 0 if there is no sequence
     if(typeof fasta_js[protein].sequence === 'undefined'){ return NaN;}
-    return tools.calculateGravy(fasta_js[protein].sequence);
+    tools.setSequence(fasta_js[protein].sequence);
+    return tools.calculateGravy();
 }
 
 function calculateMonoWeight(protein){
     //return 0 if there is no sequence
     if(typeof fasta_js[protein].sequence === 'undefined'){ return NaN;}
-    return tools.calculateMonoWeight(fasta_js[protein].sequence);
+    tools.setSequence(fasta_js[protein].sequence);
+    return tools.calculateMonoWeight();
 }
 
 function calculatePH(protein){
     //return 0 if there is no sequence
     if(typeof fasta_js[protein].sequence === 'undefined'){ return NaN;}
-    return tools.calculatePI(fasta_js[protein].sequence);
+    tools.setSequence(fasta_js[protein].sequence);
+    return tools.calculatePI();
+}
+
+function getIonCore(scan){
+    tools.setSequence(getScanDetails(scan).match_peptide);
+    return tools.ionCore();
 }
 
 function getProteins(){
@@ -137,6 +157,10 @@ function getScanDetails(scan){
     return scan_js[scan];
 }
 
+function getParamDetails(){
+    return params_js;
+}
+
 function listAllPeptides(protein){
     var json = getProteins();
     var peptides = json[protein].peptides;
@@ -177,6 +201,14 @@ function saveFasta(json){
     fasta_js = new_js;
 }
 
+function saveParams(json){
+    var new_js = {};
+    window.$.each(json, function(){
+        new_js[this.accession] = this;
+    });
+    params_js = new_js;
+}
+
 function totalScans(){
     return Object.keys(scan_js).length;
 }
@@ -213,8 +245,10 @@ module.exports = {
     getScans: getScans,
     getProteinDetails: getProteinDetails,
     getScanDetails: getScanDetails,
+    getParamDetails: getParamDetails,
     listAllPeptides: listAllPeptides,
     getFasta: getFasta,
+    getIonCore: getIonCore,
     calculateCoverage: calculateCoverage,
     calculateGravy: calculateGravy,
     calculateMonoWeight: calculateMonoWeight,

@@ -36,6 +36,10 @@ p, img{
     -webkit-app-region: no-drag;
 }
 
+#ion-core-table{
+    width: 60%;
+}
+
 #main {
     padding-top: 2.3em;
     min-height: 100%;

@@ -1,5 +1,9 @@
 'use strict';
 
+var sequence;
+var valid_sequence;
+var diff_mods = {};
+
 var avg_aa_mass = {
     G: 57.0519,
     A: 71.0788,
@@ -139,8 +143,55 @@ var pka = {
     CT_W: 3.78
 };
 
-function calculateGravy(sequence){
+//Initialize
+function setTools(params){
+    setDiffModHash(params.analysis.Sequest.diff_search_options);
+    updateMonoMasses(params.analysis.Sequest);
+}
+
+function setDiffModHash(string){
+    var mod_array = string.split(" ");
+    var count = 0;
+    var mod_symbols = ['*','#','@','^','~','$']
+    while(count < mod_array.length){
+        var mass = mod_array[count];
+        var aa = mod_array[count + 1];
+        var cur_symbol = mod_symbols.shift();
+        window.$.each(aa.split(""), function(i,v){
+            diff_mods[v + cur_symbol] = Number(mass);
+        });
+        count += 2;
+    }
+    //console.log(JSON.stringify(diff_mods));
+}
+
+function updateMonoMasses(js){
+    window.$.each(js, function(key, val){
+        var pat = /add_(\w)_/;
+        var aa = key.match(pat);
+        //console.log(key);
+        //console.log(aa);
+        if(aa !== null && aa.length != 0){
+            mono_aa_mass[aa] += val;
+        }
+    });
+}
+
+function setSequence(seq){
+    sequence = seq;
     if(typeof sequence === 'string'){
+        valid_sequence = true;
+        var core = sequence.split('.');
+        if(core.length > 2){
+            sequence = core[1];
+        }
+    } else {
+        valid_sequence = false;
+    }
+}
+
+function calculateGravy(){
+    if(valid_sequence){
         var total_gravy = 0;
         window.$.each(composition(sequence), function(aa, count){
             total_gravy += gravy[aa] * count;
@@ -150,8 +201,8 @@ function calculateGravy(sequence){
     return NaN;
 }
 
-function calculateMonoWeight(sequence){
-    if(typeof sequence === 'string'){
+function calculateMonoWeight(){
+    if(valid_sequence){
         var mono_isotopic_weight = mono_aa_mass['H2O'];
         window.$.each(composition(sequence), function(aa, count){
             mono_isotopic_weight += mono_aa_mass[aa] * count;
@@ -161,8 +212,8 @@ function calculateMonoWeight(sequence){
     return NaN;
 }
 
-function calculatePI(sequence){
-    if(typeof sequence === 'string'){
+function calculatePI(){
+    if(valid_sequence){
         var charge = 1000;
         var pH = 7;
         var delta_pH = 3.5;
@@ -202,16 +253,88 @@ function calculatePI(sequence){
     return NaN;
 }
 
-function composition(sequence){
+function composition(){
     var comp = {};
     window.$.each(sequence.split(''),function(i, aa){
         comp[aa] = (typeof comp[aa] === "undefined" ? 1 : comp[aa] + 1);
     });
+    //console.log(JSON.stringify(comp));
     return comp;
 }
 
+function ionCore(){
+    var ion_core = [];
+    if(valid_sequence){
+        var b_ions = bIons();
+        var y_ions = yIons();
+        window.$.each(makeSeqPairs(), function(i, aa){
+            ion_core[i] = {"aa": aa, "b_ion": b_ions.shift(), "y_ion": y_ions.pop()};
+        });
+    }
+    console.log(JSON.stringify(ion_core));
+    return ion_core;
+}
+
+function makeSeqPairs(){
+    var output = [];
+    var pattern = /[\*\#\@\^\~\$]/;
+    var offset = 0;
+    window.$.each(sequence.split(""), function(i, aa){
+        if(pattern.test(aa)){
+            offset += 1;
+            output[i-offset] += aa;
+        } else {
+            output[i-offset] = aa;
+        }
+    });
+    //console.log(JSON.stringify(output));
+    return output;
+}
+
+function bIons(){
+    var H = 1.00782;
+    var mass = 0;
+    var b_ions = [];
+    window.$.each(makeSeqPairs(), function(i, aa){
+        if(aa.length == 2){
+            var parts = aa.split('');
+            mass += mono_aa_mass[parts[0]];
+            mass += diff_mods[aa];
+            b_ions[i] = mass + H;
+        } else {
+            mass += mono_aa_mass[aa];
+            b_ions[i] = mass + H;
+        }
+    });
+    //console.log('bions: ' + JSON.stringify(b_ions));
+    return b_ions;
+}
+
+
+function yIons(){
+    var H = 1.00782;
+    var mass = H + 17.00274;
+    var y_ions = [];
+    window.$.each(makeSeqPairs().reverse(), function(i, aa){
+        if(aa.length == 2){
+            var parts = aa.split('');
+            mass += mono_aa_mass[parts[0]];
+            mass += diff_mods[aa];
+            y_ions[i] = mass + H;
+        } else {
+            mass += mono_aa_mass[aa];
+            y_ions[i] = mass + H;
+        }
+    });
+    //console.log('yions: ' + JSON.stringify(y_ions));
+    return y_ions;
+}
+
 module.exports = {
+    setSequence: setSequence,
+    setTools: setTools,
     calculateGravy: calculateGravy,
     calculateMonoWeight: calculateMonoWeight,
-    calculatePI: calculatePI
+    calculatePI: calculatePI,
+    ionCore: ionCore
 }

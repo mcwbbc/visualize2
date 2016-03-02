@@ -198,6 +198,7 @@ function listProteins(){
         window.$('tbody', '#protein-table').append(clone);
 
     });
+
     protein_data_table = window.$('#protein-table').DataTable({
         "paging": false,
         "info": false,
@@ -244,12 +245,6 @@ function listPeptides(accession) {
         window.$('tbody', '#peptide-table').append(clone);
     })
     addPeptideClick(accession);
-    /*peptide_table = window.$('#peptide-table').DataTable({
-        "paging": false,
-        "info": false,
-        "order": [[0, "desc"]],
-        "dom": ''
-    });*/
 }
 
 function addPeptideClick(accession){
@@ -284,25 +279,6 @@ function addScanClick(){
 }
 
 function updateScanDetails(scan){
-    /*var html = "<h3>Details</h3>";
-    html += "<div class=row><div class=col-xs-3>Scan</div><div class=col-xs-6>" +
-        ezf.getScanDetails(scan).name + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Protein</div><div class=col-xs-6>" +
-        ezf.getScanDetails(scan).reference + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Sequence</div><div class=col-xs-6>" +
-        ezf.getScanDetails(scan).match_peptide + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Peptide Prob</div><div class=col-xs-6>" +
-        Number(ezf.getScanDetails(scan).peptide_prob).toPrecision(2) + "</div></div>" +
-        "<div class=row><div class=col-xs-3>PP Discriminant Score</div><div class=col-xs-6>" +
-        Number(ezf.getScanDetails(scan).pp_discrim).toPrecision(2) + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Charge</div><div class=col-xs-6>" +
-        (ezf.getScanDetails(scan).charge) + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Delta Cn</div><div class=col-xs-6>" +
-        Number(ezf.getScanDetails(scan).deltaCn).toPrecision(4) + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Mass</div><div class=col-xs-6>" +
-        Number(ezf.getScanDetails(scan).mass).toPrecision(9) + "</div></div>" +
-        "<div class=row><div class=col-xs-3>TIC</div><div class=col-xs-6>" +
-        Number(ezf.getScanDetails(scan).tic).toPrecision(5) + "</div></div>";*/
     var template = window.document.querySelector('#scan-details-template');
     template.content.querySelector('#detail-name').innerText = ezf.getScanDetails(scan).name;
     template.content.querySelector('#detail-accession').innerText = ezf.getScanDetails(scan).reference;
@@ -315,6 +291,23 @@ function updateScanDetails(scan){
     template.content.querySelector('#detail-tic').innerText = Number(ezf.getScanDetails(scan).tic).toPrecision(5);
     var clone = window.document.importNode(template.content, true);
     window.$('.panel-body', '#details').html(clone);
+
+    var ion_core = ezf.getIonCore(scan);
+    window.$.each(ion_core, function(i, ions){
+        var trTemp = window.document.querySelector('#ion-core-tr');
+        trTemp.content.querySelector('.aa').innerText = ions.aa;
+        trTemp.content.querySelector('.b-ion').innerText = "b" + (i+1);
+        trTemp.content.querySelector('.b-ion-mass').innerText = Number(ions.b_ion).toPrecision(6);
+        trTemp.content.querySelector('.y-ion').innerText = "y" + (ion_core.length - i);
+        trTemp.content.querySelector('.y-ion-mass').innerText = Number(ions.y_ion).toPrecision(6);
+        var trClone = window.document.importNode(trTemp.content, true);
+        window.$('tbody', '#ion-core-table').append(trClone);
+    });
+
+    window.$('#ion-core-table').hide();
+    window.$('#ion-toggle').click(function(){
+        window.$('#ion-core-table').toggle();
+    });
 }
 
 function updateProteinDetails(accession){
