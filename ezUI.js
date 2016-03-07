@@ -1,6 +1,5 @@
 'use strict';
 
-//var gui = window.require('nw.gui');
 var gui = window.require('nw.gui');
 var ezf = require('./ezf');
 var filter = require('./filters');
@@ -122,45 +121,7 @@ function addShortCuts(){
         }
     })
 }
-/*
-function addGlobalShortCuts(){
-    var upKey = {
-        key: "Up",
-        active: function(){
-            var i = getActiveTR();
-            if(i > -1) {
-                console.log('change row');
-                setActiveTR(i - 1);
-                updateProteinInfo(window.$('.success', '#protein-table').attr('accession-data'));
-            }
-        },
-        failed: function(msg){
-            console.log(msg);
-        }
-    };
 
-    var keyDown = {
-        key: "Down",
-        active: function(){
-            var i = getActiveTR();
-            console.log('i: ' + i);
-            if(i > -1) {
-                console.log('change row');
-                setActiveTR(i + 1);
-                updateProteinInfo(window.$('.success', '#protein-table').attr('accession-data'));
-            }
-        },
-        failed: function(msg){
-            console.log(msg);
-        }
-    };
-
-    var upEvent = new gui.Shortcut(upKey);
-    gui.App.registerGlobalHotKey(upEvent);
-    var downEvent = new gui.Shortcut(keyDown);
-    gui.App.registerGlobalHotKey(downEvent);
-}
-*/
 function getActiveTR(){
     var tr = window.$('.success', '#protein-table');
     return tr.index();
@@ -243,7 +204,8 @@ function listPeptides(accession) {
         template.content.querySelector('.sequence').innerText = this;
         var clone = window.document.importNode(template.content, true);
         window.$('tbody', '#peptide-table').append(clone);
-    })
+    });
+    sortTable('peptide-table');
     addPeptideClick(accession);
 }
 
@@ -311,27 +273,6 @@ function updateScanDetails(scan){
 }
 
 function updateProteinDetails(accession){
-    /*var html = "<h3>Details</h3>";
-
-    var coverage = ezf.calculateCoverage(accession);
-    html += "<div class=row><div class=col-xs-3>Description</div><div class=col-xs-9>" +
-        ezf.getProteinDetails(accession).description + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Max XCorr</div><div class=col-xs-6>" +
-        ezf.getProteinDetails(accession).max_xcorr + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Total XCorr</div><div class=col-xs-6>" +
-        ezf.getProteinDetails(accession).total_xcorr + "</div></div>" +
-        "<div class=row><div class=col-xs-3>Total TIC</div><div class=col-xs-6>" +
-        ezf.getProteinDetails(accession).total_tic + "</div></div>" +
-        "<div class=row><div class=col-xs-3>% Coverage</div><div class=col-xs-6>" +
-        coverage.observed + " of " +
-        coverage.total + " aa. " +
-        (coverage.coverage * 100).toPrecision(5) + "%</div></div>";
-
-    html += "<table class=table>";
-    window.$.each(ezf.listAllPeptides(accession), function(){
-        html += "<tr><td>" + this +"</td></tr>";
-    });
-    html += "</table>";*/
     var coverage = ezf.calculateCoverage(accession);
     var template = window.document.querySelector('#protein-details-template');
     template.content.querySelector('#detail-description').innerText = ezf.getProteinDetails(accession).description;
@@ -401,6 +342,25 @@ function showSequence(accession){
     var html = "<h3>Details</h3>";
     html += "<div class=col-xs-12>" + ezf.getFasta(accession) + "</div>";
     window.$('.panel-body', '#details').html(html);
+}
+
+
+function sortTable(tbl_id){
+    //modified from Rob W (http://stackoverflow.com/questions/7558182/sort-a-table-fast-by-its-first-column-with-javascript-or-jquery)
+    var tbl = window.document.getElementById(tbl_id).tBodies[0];
+    var store = [];
+    for(var i=0, len=tbl.rows.length; i<len; i++){
+        var row = tbl.rows[i];
+        var sortnr = parseFloat(row.cells[0].textContent || row.cells[0].innerText);
+        if(!isNaN(sortnr)) store.push([sortnr, row]);
+    }
+    store.sort(function(x,y){
+        return y[0] - x[0];
+    });
+    for(var i=0, len=store.length; i<len; i++){
+        tbl.appendChild(store[i][1]);
+    }
+    store = null;
 }
 
 module.exports = {
