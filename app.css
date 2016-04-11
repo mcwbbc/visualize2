@@ -13,6 +13,7 @@ html, body, .full-height {
 #column-1{
     background-color: whitesmoke;
 }
+
 body{
     /*background: #C0ECFC;*/
     background: #eeeeee;
@@ -54,6 +55,10 @@ p, img{
     width: 3em;
 }
 
+.color-black{
+    color:black !important;
+}
+
 #peptide-list, #scan-list{
     height: 100%;
     overflow: scroll;
@@ -80,6 +85,10 @@ p, img{
     overflow: scroll;
 }
 
+#protein-nav{
+    margin-bottom: 0px;
+}
+
 #details{
     height: 96%;
     overflow: scroll;
@@ -98,6 +107,17 @@ p, img{
 
 .row{
     margin-bottom: .5em;
+}
+
+.redundant-type{
+    font: 1.2em bold;
+}
+
+.redundant-type-list{
+    background-color: #eeeeee;
+    color: black;
+    border-radius: 15pxgi;
+
 }
 
 .success, .info{

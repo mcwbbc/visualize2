@@ -3,7 +3,7 @@
 var zip = require('adm-zip');
 var xml = require('pixl-xml');
 var fs = require('fs');
-var tools = require('./tools');
+var tools = require('./sequenceTools');
 var protein_js = {};
 var scan_js = {};
 var fasta_js = {};
@@ -102,6 +102,151 @@ function calculatePH(protein){
     if(typeof fasta_js[protein].sequence === 'undefined'){ return NaN;}
     tools.setSequence(fasta_js[protein].sequence);
     return tools.calculatePI();
+}
+
+function collectPeptides(protein){
+    var hash = {};
+    console.log("collect " + protein);
+    window.$.each(getProteinDetails(protein).pep2scan, function(i, v){
+        hash[i] = v.length;
+    });
+    return hash;
+}
+
+function peptideMatchScore(protein1, protein2){
+    var p1 = collectPeptides(protein1);
+    var p2 = collectPeptides(protein2);
+    var m1 = 0;
+    var m2 = 0;
+    var h = 0;
+    window.$.each(p1, function(peptide, count){
+        if(peptide in p2){
+            h++;
+        } else {
+            m1++;
+        }
+    });
+    window.$.each(p2, function(peptide, count){
+       if(!(peptide in p1)){
+           m2++;
+       }
+    });
+    var test;
+    if(h === 0){
+        test = 0;
+    } else if(m1 + m2 === 0){
+        test = 1;
+    } else if(m1 === 0){
+        test = 2;
+    } else if(m2 === 0){
+        test = 3;
+    } else {
+        test = 4;
+    }
+    return test;
+}
+
+function getRedundantProteins(){
+    var proteins = Object.keys(getProteins()).sort();
+    var group = {};
+    var redundant = {};
+    var superset = {};
+    var subset = {};
+    var overlap = {};
+    console.log("size: " + proteins.length);
+    for(var i = 0;i < proteins.length - 1; i++){
+        for(var j = i + 1; j < proteins.length; j++){
+            //console.log("proteins " + proteins[i] + " " + proteins[j]);
+            var score = peptideMatchScore(proteins[i], proteins[j]);
+            //console.log(score);
+            if(score === 0){ continue; }
+            group[proteins[i]] = 1;
+            group[proteins[j]] = 1;
+            if(score === 1){
+                if(proteins[i] in redundant && proteins[j] in redundant[proteins[i]]) {
+                    redundant[proteins[i]][proteins[j]]++;
+                    redundant[proteins[j]][proteins[i]]++;
+                }
+                else{
+                    if(!(proteins[i] in redundant)) { redundant[proteins[i]] = {};}
+                    if(!(proteins[j] in redundant)) { redundant[proteins[j]] = {};}
+                    //console.log(JSON.stringify(redundant));
+                    redundant[proteins[i]][proteins[j]] = 1;
+                    redundant[proteins[j]][proteins[i]] = 1;
+                }
+            } else if(score === 2){
+                if(proteins[i] in superset && proteins[j] in superset[proteins[i]]) {
+                    superset[proteins[i]][proteins[j]]++;
+                    subset[proteins[j]][proteins[i]]++;
+                }
+                else{
+                    if(!(proteins[i] in superset)) { superset[proteins[i]] = {};}
+                    if(!(proteins[j] in subset)) { subset[proteins[j]] = {};}
+                    superset[proteins[i]][proteins[j]] = 1;
+                    subset[proteins[j]][proteins[i]] = 1;
+                }
+            } else if(score === 3){
+                if(proteins[i] in subset && proteins[j] in subset[proteins[i]]) {
+                    subset[proteins[i]][proteins[j]]++;
+                    superset[proteins[j]][proteins[i]]++;
+                }
+                else{
+                    if(!(proteins[i] in subset)) { subset[proteins[i]] = {};}
+                    if(!(proteins[j] in superset)) { superset[proteins[j]] = {};}
+                    subset[proteins[i]][proteins[j]] = 1;
+                    superset[proteins[j]][proteins[i]] = 1;
+                }
+            } else if(score === 4){
+                if(proteins[i] in overlap && proteins[j] in overlap[proteins[i]]) {
+                    overlap[proteins[i]][proteins[j]]++;
+                    overlap[proteins[j]][proteins[i]]++;
+                }
+                else{
+                    if(!(proteins[i] in overlap)) { overlap[proteins[i]] = {};}
+                    if(!(proteins[j] in overlap)) { overlap[proteins[j]] = {};}
+                    overlap[proteins[i]][proteins[j]] = 1;
+                    overlap[proteins[j]][proteins[i]] = 1;
+                }
+            }
+        }
+    }
+    //return {redundant: redundant, superset: superset, subset: subset, overlap: overlap};
+    // get list of unique proteins
+    window.$.each(group, function(protein, v){
+       group[protein] = { redundant: redundant[protein],
+                        subset: subset[protein],
+                        superset: superset[protein],
+                        overlap: overlap[protein]
+       }
+    });
+
+    //create peptide list
+    window.$.each(group, function(protein, results){
+        var peptides = collectPeptides(protein);
+        //console.log(protein);
+        //console.log("1: " + JSON.stringify(group));
+        window.$.each(results, function(gr,matches){
+            //console.log(gr);
+            //console.log("2: " + JSON.stringify(group));
+            if(!(typeof matches === 'undefined')) {
+                window.$.each(matches, function (match_prot, v) {
+                    //console.log(JSON.stringify(match_prot));
+                    //group[protein][gr][match_prot] = collectPeptides(match_prot);
+                    var match_peptides = {};
+                    window.$.each(collectPeptides(match_prot), function(pep, count){
+                        match_peptides[pep] = {
+                            count: count,
+                            match: pep in peptides
+                        }
+                    });
+                    group[protein][gr][match_prot] = match_peptides;
+                    //console.log("3: " + JSON.stringify(group));
+                });
+            }
+        });
+        group[protein].peptides = peptides;
+    });
+    return group;
 }
 
 function getIonCore(scan){
@@ -232,7 +377,11 @@ function updateModifications(json){
 function updatePep2Scan(json){
     var new_pep2scan = {};
     window.$.each(json.pep2scan, function(index, val){
-       new_pep2scan[val.sequence] = val;
+        var scans = [];
+        window.$.each(val, function(i, v){
+            if(i != 'sequence'){ scans.push(v)}
+        });
+       new_pep2scan[val.sequence] = scans;
     });
     json.pep2scan = new_pep2scan;
     return json;
@@ -253,5 +402,6 @@ module.exports = {
     calculateGravy: calculateGravy,
     calculateMonoWeight: calculateMonoWeight,
     calculatePH: calculatePH,
-    totalScans: totalScans
+    totalScans: totalScans,
+    getRedundantProteins: getRedundantProteins
 };
