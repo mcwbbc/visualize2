@@ -109,6 +109,12 @@ p, img{
     margin-bottom: .5em;
 }
 
+.redundant-accession{
+    cursor: pointer;
+    padding: .2em;
+    margin: .1em;
+}
+
 .redundant-type{
     font: 1.2em bold;
 }
@@ -116,12 +122,21 @@ p, img{
 .redundant-type-list{
     background-color: #eeeeee;
     color: black;
-    border-radius: 15px;
+    border-radius: 12px;
 
 }
 
 .success, .info{
     color:black;
+}
+
+#waiting-gif{
+    background-color: white;
+    margin: 1em;
+    padding: 1em;
+    border-radius: 8px;
+    color: black;
+    font-size: 1.2em;
 }
 
 input{

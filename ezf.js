@@ -106,7 +106,7 @@ function calculatePH(protein){
 
 function collectPeptides(protein){
     var hash = {};
-    console.log("collect " + protein);
+    //console.log("collect " + protein);
     window.$.each(getProteinDetails(protein).pep2scan, function(i, v){
         hash[i] = v.length;
     });
@@ -315,6 +315,13 @@ function listAllPeptides(protein){
     return peptides.sort();
 }
 
+function removeProteins(proteins){
+    for(var i=0; i < proteins.length; i++){
+       console.log( proteins[i] + " deleted: " +
+           delete protein_js[proteins[i]]);
+    }
+}
+
 function saveProteins(json){
     window.localStorage.clear();
     var new_js = {};
@@ -403,5 +410,6 @@ module.exports = {
     calculateMonoWeight: calculateMonoWeight,
     calculatePH: calculatePH,
     totalScans: totalScans,
-    getRedundantProteins: getRedundantProteins
+    getRedundantProteins: getRedundantProteins,
+    removeProteins: removeProteins
 };

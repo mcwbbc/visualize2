@@ -41,29 +41,58 @@
                     <nav id="protein-nav" class="navbar navbar-default navbar-static-top">
                         <div class="container">
                             <div class="navbar-header">
-                                <a class="navbar-brand color-black">Proteins</a>
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+                                <a href="#" class="navbar-brand color-black">Proteins</a>
+                            </div> <!-- navbar-header -->
+
+                            <div class="collapse navbar-collapse" id="navbar-collapse">
                                 <ul class="nav navbar-nav">
                                     <li>
-                                        <button type="button" class="btn btn-default navbar-btn" id="redundant">
-                                            Redudant Proteins
-                                        </button>
+                                        <a id="redundant" title="remove redundant proteins" href="#">
+                                            <span class="glyphicon glyphicon-erase" aria-hidden="true"></span>
+                                        </a>
                                     </li>
                                     <li>
-                                        <button type="button" class="btn btn-default navbar-btn" id="filter" style="width:6em; z-index: 300;">
-                                            Filter <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
-                                        </button>
+                                        <a id="filter" title="filter options" href="#">
+                                            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+                                        </a>
                                     </li>
                                     <li>
                                         <p class="navbar-text color-black" ><span id="total_scans_shown">100</span>% of total Scans</p>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
+                            </div> <!-- collapse -->
+                        </div> <!-- container -->
                     </nav>
                     <div class="col-md-12 full-height" id="protein-list">
 
                         <div class="row">
                             <div class="col-md-12">
+                                <template id="protein-tr-template">
+                                    <tr class=protein accession-data="">
+                                        <td class="pp"/>
+                                        <td class="name"/>"
+                                        <td class="accession"/>
+                                        <td class="pep_count"/>
+                                        <td class="scan_count"/>
+                                        <td class="mwt"/>
+                                        <td class="pi"/>
+                                        <td class="gravy"/>
+                                        <td class="mod-0"/>
+                                        <td class="mod-1"/>
+                                        <td class="mod-2"/>
+                                        <td class="mod-3"/>
+                                        <td class="mod-4"/>
+                                        <td class="mod-5"/>
+                                        <td class="mod-6"/>
+                                        <td class="mod-7"/>
+                                    </tr>
+                                </template>
                                 <table class="table" id="protein-table">
                                     <thead>
                                     <tr>
@@ -86,26 +115,6 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <template id="protein-tr-template">
-                                        <tr class=protein accession-data="">
-                                            <td class="pp"/>
-                                            <td class="name"/>"
-                                            <td class="accession"/>
-                                            <td class="pep_count"/>
-                                            <td class="scan_count"/>
-                                            <td class="mwt"/>
-                                            <td class="pi"/>
-                                            <td class="gravy"/>
-                                            <td class="mod-0"/>
-                                            <td class="mod-1"/>
-                                            <td class="mod-2"/>
-                                            <td class="mod-3"/>
-                                            <td class="mod-4"/>
-                                            <td class="mod-5"/>
-                                            <td class="mod-6"/>
-                                            <td class="mod-7"/>
-                                        </tr>
-                                    </template>
                                     </tbody>
                                 </table>
                             </div>
@@ -254,10 +263,11 @@
 
                     <template id="redundant-proteins-template">
                         <h3>Redundant Proteins</h3>
+                        <button id="remove-redundant-button" class="btn btn-primary">Remove Selected</button><p/>
                     </template>
 
                     <template id="redundant-protein-template">
-                        <span id="protein-name"></span>
+                        <span id="protein-name" class="redundant-accession"></span>
                         <ul id="redundant-list" class="redundant-type-list"></ul>
                     </template>
 
@@ -271,6 +281,16 @@
                     <template id="protein-details-peptides-tr">
                         <tr ><td></td></tr>
                     </template>
+
+                    <template id="waiting-gif-template">
+                        <div id="waiting-gif" class=row style="display:none;">
+                            <div class="col-sm-12">
+                                <img src="images/hourglass.png" height="32" alt="waiting image" >
+                                Loading...
+                            </div>
+                        </div>
+                    </template>
+
                         <div  id="details" class="panel panel-default">
                             <div class="panel-body">
                                 <h3>Details</h3>
