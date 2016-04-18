@@ -1,9 +1,11 @@
 'use strict';
 
-var zip = require('adm-zip');
+var zip = require('adm-zip'); //used for reading zip
+var archiver = require('archiver'); //used for writing zip
 var xml = require('pixl-xml');
 var fs = require('fs');
 var tools = require('./sequenceTools');
+var ez2;
 var protein_js = {};
 var scan_js = {};
 var fasta_js = {};
@@ -11,56 +13,119 @@ var params_js = {};
 
 // Initialize
 function readEz2(file){
-    var ez2 = new zip(file);
+    ez2 = new zip(file);
     var zipEntries = ez2.getEntries();
 
+    //list of files in zip
+    var file_names = [];
     zipEntries.forEach(function(entry){
-        if(entry.entryName == 'protein_summary.xml'){
-            var json = undefined;
-            var text = ez2.readAsText('protein_summary.xml','utf8');
-            json = xml.parse(text );
+        file_names.push(entry.entryName);
+    });
 
-            fs.writeFile('./test.json', JSON.stringify(json), function(err){
-                if(err){ return console.log(err);}
-            });
-            saveProteins(json);
-            fs.writeFile('./test.updated.json', JSON.stringify(protein_js), function(err){
-                if(err){ return console.log(err);}
-            });
+    if(file_names.indexOf('protein_summary.xml') > -1){
+        var json = undefined;
+        if(file_names.indexOf('protein_summary.json') > -1){
+            var text = ez2.readAsText('protein_summary.json','utf8');
+            json = JSON.parse(text);
+        } else {
+            var text = ez2.readAsText('protein_summary.xml','utf8');
+            json = xml.parse(text);
         }
-        if(entry.entryName == 'scans.xml'){
-            var json = undefined;
+
+
+        fs.writeFile('./test.json', JSON.stringify(json), function(err){
+            if(err){ return console.log(err);}
+        });
+        saveProteins(json);
+        fs.writeFile('./test.updated.json', JSON.stringify(protein_js), function(err){
+            if(err){ return console.log(err);}
+        });
+    }
+
+    if(file_names.indexOf('scans.xml') > -1){
+        var json = undefined;
+        /*if(file_names.indexOf('scans.json') > -1){
+            var text = ez2.readAsText('scans.json','utf8');
+            json = JSON.parse(text );
+        } else {*/
             var text = ez2.readAsText('scans.xml','utf8');
             json = xml.parse(text );
+        //}
 
-            fs.writeFile('./test.scans.json', JSON.stringify(json), function(err){
-                if(err){ return console.log(err);}
-            });
-            saveScans(json);
-            //console.log(JSON.stringify(json));
-        }
-        if(entry.entryName == 'fasta.xml'){
-            var json = undefined;
+        fs.writeFile('./test.scans.json', JSON.stringify(json), function(err){
+            if(err){ return console.log(err);}
+        });
+        saveScans(json);
+    }
+
+    if(file_names.indexOf('fasta.xml') > -1){
+        var json = undefined;
+
+        if(file_names.indexOf('fasta.json') > -1){
+            var text = ez2.readAsText('fasta.json','utf8');
+            json = JSON.parse(text );
+        } else {
             var text = ez2.readAsText('fasta.xml','utf8');
             json = xml.parse(text );
-
-            fs.writeFile('./test.fasta.json', JSON.stringify(json), function(err){
-                if(err){ return console.log(err);}
-            });
-            saveFasta(json);
         }
-        if(entry.entryName == 'param.xml'){
-            var json = undefined;
+
+        fs.writeFile('./test.fasta.json', JSON.stringify(json), function(err){
+            if(err){ return console.log(err);}
+        });
+        saveFasta(json);
+    }
+
+    if(file_names.indexOf('param.xml') > -1){
+        var json = undefined;
+
+        if(file_names.indexOf('param.json') > -1){
+            var text = ez2.readAsText('param.json','utf8');
+            json = JSON.parse(text);
+        } else {
             var text = ez2.readAsText('param.xml','utf8');
             json = xml.parse(text);
+        }
 
-            fs.writeFile('./test.params.xml', JSON.stringify(json), function(err){
-                if(err){return console.log(err);}
-            });
-            tools.setTools(json);
-            saveParams(json);
+
+        fs.writeFile('./test.params.xml', JSON.stringify(json), function(err){
+            if(err){return console.log(err);}
+        });
+        tools.setTools(json);
+        saveParams(json);
+    }
+}
+
+function saveFile(file){
+    var archive = archiver('zip');
+    var gui = window.require('nw.gui');
+    var win;
+
+    var outpipe = fs.createWriteStream(file);
+
+    archive.on('error', function(err){
+        throw err;
+    });
+    
+    outpipe.on('open', function(){
+        win = gui.Window.open('file_saving.html', {position:'center', focus: true, height: 100, width: 600, toolbar: false})
+    });
+    outpipe.on('close', function(){
+        win.close(true);
+        gui.Window.open('file_saved.html', {position:'center', focus: true, height: 100, width: 600, toolbar: false} );
+    });
+    archive.pipe(outpipe);
+
+    ez2.getEntries().forEach(function(entry){
+        if(['protein_summary.json'].indexOf(entry.entryName) > -1){ true; }
+        else {
+            archive.append(new Buffer(ez2.readAsText(entry.entryName,'utf8')), {name: entry.entryName});
         }
     });
+    archive.append(new Buffer(JSON.stringify(protein_js)), {name: 'protein_summary.json'}).
+        append(new Buffer(JSON.stringify(scan_js)), {name: 'scans.json'}).
+        append(new Buffer(JSON.stringify(fasta_js)), {name: 'fasta.json'}).
+        append(new Buffer(JSON.stringify(params_js)), {name: 'params.json'}).
+        finalize();
 }
 
 function calculateCoverage(protein){
@@ -388,7 +453,12 @@ function updatePep2Scan(json){
         window.$.each(val, function(i, v){
             if(i != 'sequence'){ scans.push(v)}
         });
-       new_pep2scan[val.sequence] = scans;
+
+        if('sequence' in json.pep2scan){
+            new_pep2scan[val.sequence] = scans;
+        } else {
+            new_pep2scan[index] = scans;
+        }
     });
     json.pep2scan = new_pep2scan;
     return json;
@@ -411,5 +481,6 @@ module.exports = {
     calculatePH: calculatePH,
     totalScans: totalScans,
     getRedundantProteins: getRedundantProteins,
-    removeProteins: removeProteins
+    removeProteins: removeProteins,
+    saveFile: saveFile
 };

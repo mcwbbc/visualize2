@@ -19,7 +19,20 @@ function openEzView(file){
         addShortCuts();
         addFilterClick();
         addRedundantClick();
+        addSaveasClick();
         window.$('#column-1').resizable({ alsoResizeReverse: "#column-2"});
+    });
+}
+
+function addSaveasClick(){
+    window.$('#save-file').click(function(){
+        var chooser = window.$('#saveas-dialog');
+        chooser.unbind('change');
+        chooser.change(function(e){
+            console.log(window.$(this).val());
+            ezf.saveFile(window.$(this).val());
+        });
+        chooser.trigger('click');
     });
 }
 

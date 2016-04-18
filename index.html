@@ -35,6 +35,7 @@
 </div>
 </div>
     <div class="container-fluid full-height" id="report" style="display: none;">
+        <input id="saveas-dialog" type="file" nwsaveas style="display:none; />
         <div class="row full-height" id="main-row">
             <div class="col-xs-4 full-height" id="column-1">
                 <div class="row full-height">
@@ -52,6 +53,11 @@
 
                             <div class="collapse navbar-collapse" id="navbar-collapse">
                                 <ul class="nav navbar-nav">
+                                    <li>
+                                        <a id="save-file" title="save ez2 file" href="#">
+                                            <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                        </a>
+                                    </li>
                                     <li>
                                         <a id="redundant" title="remove redundant proteins" href="#">
                                             <span class="glyphicon glyphicon-erase" aria-hidden="true"></span>
