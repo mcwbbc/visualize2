@@ -450,12 +450,16 @@ function updatePep2Scan(json){
     var new_pep2scan = {};
     window.$.each(json.pep2scan, function(index, val){
         var scans = [];
+        var sequence = null;
         window.$.each(val, function(i, v){
-            if(i != 'sequence'){ scans.push(v)}
+            if(i === 'sequence')
+                { sequence = v;}
+            else
+                { scans.push(v); }
         });
 
-        if('sequence' in json.pep2scan){
-            new_pep2scan[val.sequence] = scans;
+        if(typeof sequence === 'string'){
+            new_pep2scan[sequence] = scans;
         } else {
             new_pep2scan[index] = scans;
         }
