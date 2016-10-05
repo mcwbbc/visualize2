@@ -157,7 +157,7 @@ function setDiffModHash(string){
         var mass = mod_array[count];
         var aa = mod_array[count + 1];
         var cur_symbol = mod_symbols.shift();
-        window.$.each(aa.split(""), function(i,v){
+        global.$.each(aa.split(""), function(i,v){
             diff_mods[v + cur_symbol] = Number(mass);
         });
         count += 2;
@@ -166,7 +166,7 @@ function setDiffModHash(string){
 }
 
 function updateMonoMasses(js){
-    window.$.each(js, function(key, val){
+    global.$.each(js, function(key, val){
         var pat = /add_(\w)_/;
         var aa = key.match(pat);
         //console.log(key);
@@ -193,7 +193,7 @@ function setSequence(seq){
 function calculateGravy(){
     if(valid_sequence){
         var total_gravy = 0;
-        window.$.each(composition(sequence), function(aa, count){
+        global.$.each(composition(sequence), function(aa, count){
             total_gravy += gravy[aa] * count;
         });
         return total_gravy / sequence.length;
@@ -204,7 +204,7 @@ function calculateGravy(){
 function calculateMonoWeight(){
     if(valid_sequence){
         var mono_isotopic_weight = mono_aa_mass['H2O'];
-        window.$.each(composition(sequence), function(aa, count){
+        global.$.each(composition(sequence), function(aa, count){
             mono_isotopic_weight += mono_aa_mass[aa] * count;
         });
         return mono_isotopic_weight;
@@ -229,13 +229,13 @@ function calculatePI(){
             cr = Math.pow(10, pH - c_pKa);
             pc = cr/(cr+1);
             charge -= pc;
-            window.$.each(["K", "R", "H"], function(i, basic){
+            global.$.each(["K", "R", "H"], function(i, basic){
                 cr = Math.pow(10, pka[basic] - pH);
                 pc = (typeof comp[basic] === "undefined" ? 0 : comp[basic] * (cr/(cr+1)));
                 charge += pc;
             });
 
-            window.$.each(["D", "E", "C", "Y"], function(i, acid){
+            global.$.each(["D", "E", "C", "Y"], function(i, acid){
                 cr = Math.pow(10, pH - pka[acid]);
                 pc = (typeof comp[acid] === "undefined" ? 0 : comp[acid] * (cr/(cr+1)));
                 charge -= pc;
@@ -255,7 +255,7 @@ function calculatePI(){
 
 function composition(){
     var comp = {};
-    window.$.each(sequence.split(''),function(i, aa){
+    global.$.each(sequence.split(''),function(i, aa){
         comp[aa] = (typeof comp[aa] === "undefined" ? 1 : comp[aa] + 1);
     });
     //console.log(JSON.stringify(comp));
@@ -267,7 +267,7 @@ function ionCore(){
     if(valid_sequence){
         var b_ions = bIons();
         var y_ions = yIons();
-        window.$.each(makeSeqPairs(), function(i, aa){
+        global.$.each(makeSeqPairs(), function(i, aa){
             ion_core[i] = {"aa": aa, "b_ion": b_ions.shift(), "y_ion": y_ions.pop()};
         });
     }
@@ -279,7 +279,7 @@ function makeSeqPairs(){
     var output = [];
     var pattern = /[\*\#\@\^\~\$]/;
     var offset = 0;
-    window.$.each(sequence.split(""), function(i, aa){
+    global.$.each(sequence.split(""), function(i, aa){
         if(pattern.test(aa)){
             offset += 1;
             output[i-offset] += aa;
@@ -295,7 +295,7 @@ function bIons(){
     var H = 1.00782;
     var mass = 0;
     var b_ions = [];
-    window.$.each(makeSeqPairs(), function(i, aa){
+    global.$.each(makeSeqPairs(), function(i, aa){
         if(aa.length == 2){
             var parts = aa.split('');
             mass += mono_aa_mass[parts[0]];
@@ -315,7 +315,7 @@ function yIons(){
     var H = 1.00782;
     var mass = H + 17.00274;
     var y_ions = [];
-    window.$.each(makeSeqPairs().reverse(), function(i, aa){
+    global.$.each(makeSeqPairs().reverse(), function(i, aa){
         if(aa.length == 2){
             var parts = aa.split('');
             mass += mono_aa_mass[parts[0]];

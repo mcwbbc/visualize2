@@ -70,24 +70,26 @@
           var mod_bool = true;
           var mods_hash = {"*": 0, "#": 1, "@": 2, "^": 3, "~": 4, "$": 5, "]": 6, "[": 7};
           var mods_line = $('#modification-filter').val();
-          var mods = mods_line.split(/and|or/);
-          if(mods_line != ''){
-              mod_bool = false;
-              var mod_logic = /and|or/g.exec(mods_line);
-              $.each(mods,function(i, value){
-                  if(i === 0 || mod_logic[i - 1] === "or"){
-                      mod_bool = mod_bool || data[8 + mods_hash[value]] * 1 > 0;
-                  }else {
-                      mod_bool = mod_bool && data[8 + mods_hash[value]] * 1 > 0;
-                  }
-              })
-          }
+          if(typeof mods_line !== 'undefined' ) {
+              var mods = mods_line.split(/and|or/);
 
-          var cont_decoy_bool = true;
-          if($('[name=decoy-cont-filter]').prop("checked")){
-              cont_decoy_bool = !/\b(DECOY|CONTAM)/.test(data[1]);
-          }
+              if (mods_line !== '') {
+                  mod_bool = false;
+                  var mod_logic = /and|or/g.exec(mods_line);
+                  $.each(mods, function (i, value) {
+                      if (i === 0 || mod_logic[i - 1] === "or") {
+                          mod_bool = mod_bool || data[8 + mods_hash[value]] * 1 > 0;
+                      } else {
+                          mod_bool = mod_bool && data[8 + mods_hash[value]] * 1 > 0;
+                      }
+                  })
+              }
 
+              var cont_decoy_bool = true;
+              if ($('[name=decoy-cont-filter]').prop("checked")) {
+                  cont_decoy_bool = !/\b(DECOY|CONTAM)/.test(data[1]);
+              }
+          }
           return(protein_prob >= protein_prob_filter &&
                 pep_count >= pep_count_filter &&
                 scan_count >= scan_count_filter && mod_bool && cont_decoy_bool);

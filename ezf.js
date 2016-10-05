@@ -133,7 +133,7 @@ function calculateCoverage(protein){
     var seq_count = 0;
     //return empty if no sequence
     if(typeof fasta_js[protein].sequence === 'undefined'){ return {"coverage": 0, "observed": 0, "total": 0  };}
-    window.$.each(getPeptides(protein), function(i, val){
+    global.$.each(getPeptides(protein), function(i, val){
         var pat = RegExp(val, 'igm');
         var res = pat.exec(fasta_js[protein].sequence);
         if(res === null){return {};} //return empty if no match
@@ -141,7 +141,7 @@ function calculateCoverage(protein){
             seq_map[res.index + i] = 1;
         }
     });
-    window.$.each(seq_map, function(i,v){ seq_count += (v || 0); })
+    global.$.each(seq_map, function(i,v){ seq_count += (v || 0); })
     return {"coverage": seq_count / fasta_js[protein].sequence.length,
         "observed": seq_count,
         "total": fasta_js[protein].sequence.length  }
@@ -172,7 +172,7 @@ function calculatePH(protein){
 function collectPeptides(protein){
     var hash = {};
     //console.log("collect " + protein);
-    window.$.each(getProteinDetails(protein).pep2scan, function(i, v){
+    global.$.each(getProteinDetails(protein).pep2scan, function(i, v){
         hash[i] = v.length;
     });
     return hash;
@@ -184,14 +184,14 @@ function peptideMatchScore(protein1, protein2){
     var m1 = 0;
     var m2 = 0;
     var h = 0;
-    window.$.each(p1, function(peptide, count){
+    global.$.each(p1, function(peptide, count){
         if(peptide in p2){
             h++;
         } else {
             m1++;
         }
     });
-    window.$.each(p2, function(peptide, count){
+    global.$.each(p2, function(peptide, count){
        if(!(peptide in p1)){
            m2++;
        }
@@ -277,7 +277,7 @@ function getRedundantProteins(){
     }
     //return {redundant: redundant, superset: superset, subset: subset, overlap: overlap};
     // get list of unique proteins
-    window.$.each(group, function(protein, v){
+    global.$.each(group, function(protein, v){
        group[protein] = { redundant: redundant[protein],
                         subset: subset[protein],
                         superset: superset[protein],
@@ -286,19 +286,19 @@ function getRedundantProteins(){
     });
 
     //create peptide list
-    window.$.each(group, function(protein, results){
+    global.$.each(group, function(protein, results){
         var peptides = collectPeptides(protein);
         //console.log(protein);
         //console.log("1: " + JSON.stringify(group));
-        window.$.each(results, function(gr,matches){
+        global.$.each(results, function(gr,matches){
             //console.log(gr);
             //console.log("2: " + JSON.stringify(group));
             if(!(typeof matches === 'undefined')) {
-                window.$.each(matches, function (match_prot, v) {
+                global.$.each(matches, function (match_prot, v) {
                     //console.log(JSON.stringify(match_prot));
                     //group[protein][gr][match_prot] = collectPeptides(match_prot);
                     var match_peptides = {};
-                    window.$.each(collectPeptides(match_prot), function(pep, count){
+                    global.$.each(collectPeptides(match_prot), function(pep, count){
                         match_peptides[pep] = {
                             count: count,
                             match: pep in peptides
@@ -326,7 +326,7 @@ function getProteins(){
 function getPeptides(protein){
     var json = getProteins();
     var peptides = [];
-    window.$.each(json[protein].pep2scan, function(seq, val){
+    global.$.each(json[protein].pep2scan, function(seq, val){
         peptides.push(seq);
     })
     return peptides;
@@ -336,7 +336,7 @@ function getPeptides(protein){
 function getScans(protein, sequence){
     var json = getProteins();
     var scans = [];
-    window.$.each(json[protein].pep2scan[sequence], function(index, val){
+    global.$.each(json[protein].pep2scan[sequence], function(index, val){
         if(index == 'sequence'){
 
         } else {
@@ -381,6 +381,7 @@ function listAllPeptides(protein){
 }
 
 function removeProteins(proteins){
+    console.log('remove proteins');
     for(var i=0; i < proteins.length; i++){
        console.log( proteins[i] + " deleted: " +
            delete protein_js[proteins[i]]);
@@ -390,7 +391,7 @@ function removeProteins(proteins){
 function saveProteins(json){
     window.localStorage.clear();
     var new_js = {};
-    window.$.each(json, function(){
+    global.$.each(json, function(){
         new_js[this.accession] = updatePep2Scan(this);
         new_js[this.accession] = updateModifications(this);
         //backwards compatability
@@ -403,7 +404,7 @@ function saveProteins(json){
 function saveScans(json){
     //window.localStorage.setItem('scans', '');
     var new_js = {};
-    window.$.each(json, function(){
+    global.$.each(json, function(){
         new_js[this.raw_name] = this;
 
     });
@@ -412,7 +413,7 @@ function saveScans(json){
 
 function saveFasta(json){
     var new_js = {};
-    window.$.each(json, function(){
+    global.$.each(json, function(){
         new_js[this.accession] = this;
     });
     fasta_js = new_js;
@@ -420,7 +421,7 @@ function saveFasta(json){
 
 function saveParams(json){
     var new_js = {};
-    window.$.each(json, function(){
+    global.$.each(json, function(){
         new_js[this.accession] = this;
     });
     params_js = new_js;
@@ -436,8 +437,8 @@ function updateModifications(json){
         peptides = [peptides];
     }
     var mods_json = {"*": 0, "#": 0, "@": 0, "^": 0, "~": 0, "$": 0, "]": 0, "[": 0};
-    window.$.each(peptides, function(i, pep){
-        window.$.each(mods_json, function(mod, v){
+    global.$.each(peptides, function(i, pep){
+        global.$.each(mods_json, function(mod, v){
             var pat = RegExp('\\' + mod);
             if(pat.test(pep)){ mods_json[mod] += 1; }
         });
@@ -448,10 +449,10 @@ function updateModifications(json){
 
 function updatePep2Scan(json){
     var new_pep2scan = {};
-    window.$.each(json.pep2scan, function(index, val){
+    global.$.each(json.pep2scan, function(index, val){
         var scans = [];
         var sequence = null;
-        window.$.each(val, function(i, v){
+        global.$.each(val, function(i, v){
             if(i === 'sequence')
                 { sequence = v;}
             else

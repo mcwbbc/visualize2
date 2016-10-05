@@ -1,18 +1,42 @@
 'use strict';
 
-var gui = window.require('nw.gui');
+var gui = require('nw.gui');
+global.gui = gui;
+global.$ = $;
+global.console = console;
+
 var ezf = require('./ezf');
 var filter = require('./filters');
 var peptide_table;
 var cntx;
-var protein_menu = new gui.Menu();
+var protein_menu = new global.gui.Menu();
 var protein_data_table;
+
+function main(){
+    window.$('#open').click(function(event){
+        chooseFile('#fileDialog');
+    });
+    window.$('#quit').click(function(event){
+        process.exit(0);
+    });
+}
+
+function chooseFile(name){
+    var chooser = window.$(name);
+    chooser.unbind('change');
+    chooser.change(function(event){
+        console.log(window.$(this).val());
+        openEzView(window.$(this).val());
+    });
+
+    chooser.trigger('click');
+}
 
 function openEzView(file){
     ezf.readEz2(file);
-    window.$('#main').toggle();
-    window.$('#report').toggle(function(){
-        gui.Window.get().title = "Visualize 2.0: " + file;
+    $('#main').toggle();
+    $('#report').toggle(function(){
+        global.gui.Window.get().title = "Visualize 2.0: " + file;
         listProteins();
         addProteinClick();
         addProteinMenu();
@@ -20,33 +44,33 @@ function openEzView(file){
         addFilterClick();
         addRedundantClick();
         addSaveasClick();
-        window.$('#column-1').resizable({ alsoResizeReverse: "#column-2"});
+        $('#column-1').resizable({ alsoResizeReverse: "#column-2"});
     });
 }
 
 function addSaveasClick(){
-    window.$('#save-file').click(function(){
-        var chooser = window.$('#saveas-dialog');
+    $('#save-file').click(function(){
+        var chooser = $('#saveas-dialog');
         chooser.unbind('change');
         chooser.change(function(e){
-            console.log(window.$(this).val());
-            ezf.saveFile(window.$(this).val());
+            console.log($(this).val());
+            ezf.saveFile($(this).val());
         });
         chooser.trigger('click');
     });
 }
 
 function addRedundantClick(){
-    window.$('#redundant').click(function(){
-        var template = window.document.querySelector('#waiting-gif-template');
-        var clone = window.document.importNode(template.content, true);
+    $('#redundant').click(function(){
+        var template = document.querySelector('#waiting-gif-template');
+        var clone = document.importNode(template.content, true);
         var remove = [];
-        window.$('.panel-body', '#details').html(clone);
-        window.$('#waiting-gif').show("fast", function(){
+        $('.panel-body', '#details').html(clone);
+        $('#waiting-gif').show("fast", function(){
             listRedundantProteins();
-            window.$(this).hide();
-            window.$('.redundant-accession').click(function(){
-                var span = window.$(this);
+            $(this).hide();
+            $('.redundant-accession').click(function(){
+                var span = $(this);
                 if(span.hasClass('bg-danger')){
                     span.removeClass('bg-danger text-muted');
                     for(var i = 0; i < remove.length; i++){
@@ -60,45 +84,45 @@ function addRedundantClick(){
                     remove.push(span.attr('data-accession'));
                 }
             });
-            window.$('#remove-redundant-button').click(function(){
+            $('#remove-redundant-button').click(function(){
                 console.log(remove.join());
                 ezf.removeProteins(remove);
-                //removeFilters();
                 listProteins();
                 addProteinClick();
                 addProteinMenu();
+                removeFilters();
             });
         });
     });
 }
 
 function addFilterClick(){
-    window.$('#filter').click(function(){
-        window.$.get('./filters.html', function(html){
-            window.$('.panel-body', '#details').html(html);
+    $('#filter').click(function(){
+        $.get('./filters.html', function(html){
+            $('.panel-body', '#details').html(html);
             setFilterValues(filter.getProteinProbFilter(),
                 filter.getPeptideCountFilter(),
                 filter.getScanCountFiler(),
                 filter.getModificationFilter(),
                 filter.getDecoyFilter());
             enableModificationFilter();
-            window.$('#filter-on').click(function(){
-                var protein_val = window.$('#protein-prob-filter').val();
-                var pep_val = window.$('#pep-count-filter').val();
-                var scan_val = window.$('#scan-count-filter').val();
-                var mod_val = window.$('#modification-filter').val();
-                var decoy_prop = window.$('[name=decoy-cont-filter]').prop('checked');
+            $('#filter-on').click(function(){
+                var protein_val = $('#protein-prob-filter').val();
+                var pep_val = $('#pep-count-filter').val();
+                var scan_val = $('#scan-count-filter').val();
+                var mod_val = $('#modification-filter').val();
+                var decoy_prop = $('[name=decoy-cont-filter]').prop('checked');
                 filter.setProteinProbFilter(protein_val);
                 filter.setPeptideCountFilter(pep_val);
                 filter.setScanCountFilter(scan_val);
                 filter.setModificationFilter(mod_val);
                 filter.setDecoyFilter(decoy_prop);
                 protein_data_table.draw();
-                var btn = window.$('#filter');
+                var btn = $('#filter');
                 btn.addClass('btn-warning');
                 setScanTotal();
             });
-            window.$('#filter-off').click(function(){
+            $('#filter-off').click(function(){
                 removeFilters();
             });
         });
@@ -112,78 +136,78 @@ function removeFilters(){
     filter.setScanCountFilter(0);
     filter.setDecoyFilter(false);
     if(protein_data_table){ protein_data_table.draw(); }
-    var btn = window.$('#filter');
+    var btn = $('#filter');
     btn.removeClass('btn-warning');
-    window.$('button', '#filter-mod-sym').prop('disabled', false);
-    window.$('button', '#filter-mod-logic').prop('disabled', true);
-    window.$('#total_scans_shown').text(100);
+    $('button', '#filter-mod-sym').prop('disabled', false);
+    $('button', '#filter-mod-logic').prop('disabled', true);
+    $('#total_scans_shown').text(100);
 }
 
 function enableModificationFilter(){
-    var mod_filter = window.$('#modification-filter');
-    window.$('button', '.mod-filter-group').click(function(){
+    var mod_filter = $('#modification-filter');
+    $('button', '.mod-filter-group').click(function(){
         var text = mod_filter.val();
         console.log(text);
-        text += window.$(this).text();
+        text += $(this).text();
         console.log(text);
         mod_filter.val(text);
-        window.$('button', '.mod-filter-group').prop('disabled', function(i, v){ return !v; });
+        $('button', '.mod-filter-group').prop('disabled', function(i, v){ return !v; });
     });
-    window.$('#mod-reset').click(function(){
+    $('#mod-reset').click(function(){
         mod_filter.val('');
-        window.$('button', '#filter-mod-sym').prop('disabled', false);
-        window.$('button', '#filter-mod-logic').prop('disabled', true);
+        $('button', '#filter-mod-sym').prop('disabled', false);
+        $('button', '#filter-mod-logic').prop('disabled', true);
     });
     return;
 }
 
 function setScanTotal(){
     var scans_left = 0;
-    window.$('.scan_count', '.protein').each(function(){
-        scans_left += Number(window.$(this).text());
+    $('.scan_count', '.protein').each(function(){
+        scans_left += Number($(this).text());
     });
-    window.$('#total_scans_shown').text(Number(100 * scans_left / ezf.totalScans()).toPrecision(2));
-    //window.$('#total_scans_shown').text(Number(scans_left));
+    $('#total_scans_shown').text(Number(100 * scans_left / ezf.totalScans()).toPrecision(2));
+    //$('#total_scans_shown').text(Number(scans_left));
 }
 
 function setFilterValues(prot, pep, scan, mod, decoy){
-    window.$('#protein-prob-filter').val(prot);
-    window.$('#pep-count-filter').val(pep);
-    window.$('#scan-count-filter').val(scan);
-    window.$('#modification-filter').val(mod);
-    window.$('[name=decoy-cont-filter]').prop('checked', decoy);
+    $('#protein-prob-filter').val(prot);
+    $('#pep-count-filter').val(pep);
+    $('#scan-count-filter').val(scan);
+    $('#modification-filter').val(mod);
+    $('[name=decoy-cont-filter]').prop('checked', decoy);
 }
 
 function addShortCuts(){
-    window.$(window.document).keydown(function(e){
+    $(document).keydown(function(e){
         if(e.which === 38){ //arrow up
             e.preventDefault();
             var i = getActiveTR();
             if(i > -1) {
                 setActiveTR(i - 1);
-                updateProteinInfo(window.$('.success', '#protein-table').attr('accession-data'));
+                updateProteinInfo($('.success', '#protein-table').attr('accession-data'));
             }
         } else if(e.which === 40){ //arrow down
             e.preventDefault();
             var i = getActiveTR();
             if(i > -1) {
                 setActiveTR(i + 1);
-                updateProteinInfo(window.$('.success', '#protein-table').attr('accession-data'));
+                updateProteinInfo($('.success', '#protein-table').attr('accession-data'));
             }
         }
     })
 }
 
 function getActiveTR(){
-    var tr = window.$('.success', '#protein-table');
+    var tr = $('.success', '#protein-table');
     return tr.index();
 }
 
 function setActiveTR(index){
-    window.$('.success').removeClass('success');
-    if(index >= window.$('tr', '#protein-table tbody').length){ index = 0;}
-    var htmlTR = window.$('tr', '#protein-table tbody').get(Number(index));
-    window.$(htmlTR).addClass('success');
+    $('.success').removeClass('success');
+    if(index >= $('tr', '#protein-table tbody').length){ index = 0;}
+    var htmlTR = $('tr', '#protein-table tbody').get(Number(index));
+    $(htmlTR).addClass('success');
     htmlTR.scrollIntoView({behavior: "smooth"});
 }
 
@@ -191,13 +215,13 @@ function listProteins(){
     if(!(typeof protein_data_table === 'undefined')){
         protein_data_table.clear();
         protein_data_table.destroy();
-        //window.$('tr', '#protein-table tbody').each(function(){
+        //$('tr', '#protein-table tbody').each(function(){
         //    this.remove();
         //});
     }
 
-    window.$.each(ezf.getProteins(), function () {
-        var template = window.document.querySelector('#protein-tr-template');
+    $.each(ezf.getProteins(), function () {
+        var template = document.querySelector('#protein-tr-template');
         template.content.querySelector('.protein').setAttribute('accession-data', this.accession);
         template.content.querySelector('.pp').innerText = Number(this.protein_prob).toPrecision(4);
         template.content.querySelector('.name').innerText = this.name;
@@ -215,12 +239,12 @@ function listProteins(){
         template.content.querySelector('.mod-5').innerText = this.modifications['$'];
         template.content.querySelector('.mod-6').innerText = this.modifications[']'];
         template.content.querySelector('.mod-7').innerText = this.modifications['['];
-        var clone = window.document.importNode(template.content, true);
-        window.$('tbody', '#protein-table').append(clone);
+        var clone = document.importNode(template.content, true);
+        $('tbody', '#protein-table').append(clone);
 
     });
 
-    protein_data_table = window.$('#protein-table').DataTable({
+    protein_data_table = $('#protein-table').DataTable({
         "paging": false,
         "info": false,
         "order": [[0, "desc"],[4,"desc"],[3,"desc"]],
@@ -237,51 +261,51 @@ function listProteins(){
 
 function addProteinClick(){
     console.log("DEBUG: adding protein click events");
-    window.$('.protein', '#protein-table').click(function(){
-        window.$('.success').removeClass('success');
-        window.$(this).addClass('success');
-        updateProteinInfo(window.$(this).attr('accession-data'));
-        //console.log(window.$(this).attr('accession-data'));
+    $('.protein', '#protein-table').click(function(){
+        $('.success').removeClass('success');
+        $(this).addClass('success');
+        updateProteinInfo($(this).attr('accession-data'));
+        //console.log($(this).attr('accession-data'));
     });
 }
 
 function updateProteinInfo(accession){
-    window.$('tbody', '#scan-table').html('');
+    $('tbody', '#scan-table').html('');
     listPeptides(accession);
     updateProteinDetails(accession);
 }
 
 function listPeptides(accession) {
-    if(window.$.fn.dataTable.isDataTable( '#peptide-table')){
+    if($.fn.dataTable.isDataTable( '#peptide-table')){
         peptide_table.destroy();
     }
-    window.$('tbody', '#peptide-table').html('');
+    $('tbody', '#peptide-table').html('');
     
-    window.$.each(ezf.getPeptides(accession), function () {
-        var template = window.document.querySelector('#peptide-tr-template');
+    $.each(ezf.getPeptides(accession), function () {
+        var template = document.querySelector('#peptide-tr-template');
         template.content.querySelector('.peptide').setAttribute('peptide-data', this);
         template.content.querySelector('.scan_count').innerText = ezf.getScans(accession, this).length;
         template.content.querySelector('.sequence').innerText = this;
-        var clone = window.document.importNode(template.content, true);
-        window.$('tbody', '#peptide-table').append(clone);
+        var clone = document.importNode(template.content, true);
+        $('tbody', '#peptide-table').append(clone);
     });
     sortTable('peptide-table');
     addPeptideClick(accession);
 }
 
 function listRedundantProteins(){
-    var template = window.document.querySelector('#redundant-proteins-template');
-    var clone = window.document.importNode(template.content, true);
-    window.$('.panel-body', '#details').html(clone);
+    var template = document.querySelector('#redundant-proteins-template');
+    var clone = document.importNode(template.content, true);
+    $('.panel-body', '#details').html(clone);
 
-    window.$.each(ezf.getRedundantProteins(), function(protein, results){
-        var t2 = window.document.querySelector('#redundant-protein-template');
+    $.each(ezf.getRedundantProteins(), function(protein, results){
+        var t2 = document.querySelector('#redundant-protein-template');
         t2.content.querySelector('#protein-name').innerText = "(" + protein + ") " + ezf.getProteinDetails(protein).name;
         t2.content.querySelector('#protein-name').setAttribute('data-accession', protein);
         t2.content.querySelector('#redundant-list').innerText = "";
 
         var orig_peptides = "";
-        window.$.each(results.peptides, function(k,v){
+        $.each(results.peptides, function(k,v){
             orig_peptides += "(" + v + ") " + k + "<br/>";
         });
         t2.content.querySelector('#redundant-list').innerHTML = orig_peptides;
@@ -289,14 +313,14 @@ function listRedundantProteins(){
 
         delete results.peptides;
 
-        window.$.each(results, function(group, matches){
+        $.each(results, function(group, matches){
             if(!(typeof matches === 'undefined')){
-                var t3 = window.document.querySelector('#redundant-peptides-template');
+                var t3 = document.querySelector('#redundant-peptides-template');
                 t3.content.querySelector('#type').innerText = group;
                 var match_peptides = "";
-                window.$.each(matches, function(prot, peps){
+                $.each(matches, function(prot, peps){
                     match_peptides += "(" + prot + ") " + ezf.getProteinDetails(prot).name + "<br/><ul>";
-                    window.$.each(peps, function(pep, v){
+                    $.each(peps, function(pep, v){
                         match_peptides += "<li>";
                         if(v.match){
                             match_peptides += " * ";
@@ -308,48 +332,48 @@ function listRedundantProteins(){
 
                 t3.content.querySelector('#redundant-peptides').innerHTML = match_peptides;
 
-                var clone = window.document.importNode(t3.content, true);
+                var clone = document.importNode(t3.content, true);
                 t2.content.querySelector('#redundant-list').appendChild(clone);
             }
         });
-        var clone = window.document.importNode(t2.content, true);
-        window.$('.panel-body', '#details').append(clone);
+        var clone = document.importNode(t2.content, true);
+        $('.panel-body', '#details').append(clone);
     });
 }
 
 function addPeptideClick(accession){
     //console.log("DEBUG: adding peptide click events");
-    window.$('.peptide', '#peptide-table').click(function(){
-        //console.log(window.$(this).attr('accession-data'));
-        window.$('.success', '#peptide-table').removeClass('success');
-        window.$('.success', '#scan-table').removeClass('success');
-        window.$(this).addClass('success');
-        window.$('tbody', '#scan-table').html('');
-        listScans(accession, window.$(this).attr('peptide-data'));
+    $('.peptide', '#peptide-table').click(function(){
+        //console.log($(this).attr('accession-data'));
+        $('.success', '#peptide-table').removeClass('success');
+        $('.success', '#scan-table').removeClass('success');
+        $(this).addClass('success');
+        $('tbody', '#scan-table').html('');
+        listScans(accession, $(this).attr('peptide-data'));
     });
 }
 
 function listScans(accession, sequence){
-    window.$.each(ezf.getScans(accession, sequence), function(){
-        var template = window.document.querySelector('#scan-tr-template');
+    $.each(ezf.getScans(accession, sequence), function(){
+        var template = document.querySelector('#scan-tr-template');
         template.content.querySelector('.scan').setAttribute('scan-data', this);
         template.content.querySelector('.name').innerText = this;
-        var clone = window.document.importNode(template.content, true);
-        window.$('tbody', '#scan-table').append(clone);
+        var clone = document.importNode(template.content, true);
+        $('tbody', '#scan-table').append(clone);
     });
     addScanClick();
 }
 
 function addScanClick(){
-    window.$('tr', '#scan-table').click(function(){
-        window.$('.success', '#scan-table').removeClass('success');
-        window.$(this).addClass('success');
-        updateScanDetails(window.$(this).attr('scan-data'), cntx);
+    $('tr', '#scan-table').click(function(){
+        $('.success', '#scan-table').removeClass('success');
+        $(this).addClass('success');
+        updateScanDetails($(this).attr('scan-data'), cntx);
     });
 }
 
 function updateScanDetails(scan){
-    var template = window.document.querySelector('#scan-details-template');
+    var template = document.querySelector('#scan-details-template');
     template.content.querySelector('#detail-name').innerText = ezf.getScanDetails(scan).name;
     template.content.querySelector('#detail-accession').innerText = ezf.getScanDetails(scan).reference;
     template.content.querySelector('#detail-sequence').innerText = ezf.getScanDetails(scan).match_peptide;
@@ -359,30 +383,30 @@ function updateScanDetails(scan){
     template.content.querySelector('#detail-delta_cn').innerText = Number(ezf.getScanDetails(scan).deltaCn).toPrecision(4);
     template.content.querySelector('#detail-mass').innerText = Number(ezf.getScanDetails(scan).mass).toPrecision(9);
     template.content.querySelector('#detail-tic').innerText = Number(ezf.getScanDetails(scan).tic).toPrecision(5);
-    var clone = window.document.importNode(template.content, true);
-    window.$('.panel-body', '#details').html(clone);
+    var clone = document.importNode(template.content, true);
+    $('.panel-body', '#details').html(clone);
 
     var ion_core = ezf.getIonCore(scan);
-    window.$.each(ion_core, function(i, ions){
-        var trTemp = window.document.querySelector('#ion-core-tr');
+    $.each(ion_core, function(i, ions){
+        var trTemp = document.querySelector('#ion-core-tr');
         trTemp.content.querySelector('.aa').innerText = ions.aa;
         trTemp.content.querySelector('.b-ion').innerText = "b" + (i+1);
         trTemp.content.querySelector('.b-ion-mass').innerText = Number(ions.b_ion).toPrecision(6);
         trTemp.content.querySelector('.y-ion').innerText = "y" + (ion_core.length - i);
         trTemp.content.querySelector('.y-ion-mass').innerText = Number(ions.y_ion).toPrecision(6);
-        var trClone = window.document.importNode(trTemp.content, true);
-        window.$('tbody', '#ion-core-table').append(trClone);
+        var trClone = document.importNode(trTemp.content, true);
+        $('tbody', '#ion-core-table').append(trClone);
     });
 
-    window.$('#ion-core-table').hide();
-    window.$('#ion-toggle').click(function(){
-        window.$('#ion-core-table').toggle();
+    $('#ion-core-table').hide();
+    $('#ion-toggle').click(function(){
+        $('#ion-core-table').toggle();
     });
 }
 
 function updateProteinDetails(accession){
     var coverage = ezf.calculateCoverage(accession);
-    var template = window.document.querySelector('#protein-details-template');
+    var template = document.querySelector('#protein-details-template');
     template.content.querySelector('#detail-description').innerText = ezf.getProteinDetails(accession).description;
     template.content.querySelector('#detail-max_xcorr').innerText = ezf.getProteinDetails(accession).max_xcorr;
     template.content.querySelector('#detail-total_xcorr').innerText = ezf.getProteinDetails(accession).total_xcorr;
@@ -395,20 +419,20 @@ function updateProteinDetails(accession){
     coverage.total + " aa. " +
     (coverage.coverage * 100).toPrecision(5) + "%";
 
-    var clone = window.document.importNode(template.content, true);
-    window.$('.panel-body','#details').html(clone);
+    var clone = document.importNode(template.content, true);
+    $('.panel-body','#details').html(clone);
 
-    window.$.each(ezf.listAllPeptides(accession), function(){
-        var trTemp = window.document.querySelector('#protein-details-peptides-tr');
+    $.each(ezf.listAllPeptides(accession), function(){
+        var trTemp = document.querySelector('#protein-details-peptides-tr');
         trTemp.content.querySelector('td').innerText = this;
-        var trClone = window.document.importNode(trTemp.content, true);
-        window.$('tbody', '#detail-peptides-table').append(trClone);
+        var trClone = document.importNode(trTemp.content, true);
+        $('tbody', '#detail-peptides-table').append(trClone);
     });
 }
 
 function addProteinMenu(){
 
-    window.$('.protein', '#protein-table').contextmenu(function(event) {
+    $('.protein', '#protein-table').contextmenu(function(event) {
         event.preventDefault();
         //console.log("clicked at: " + event.pageX + "," + event.pageY);
         var window_offset_x = gui.Window.get(window).x - gui.Window.get().x;
@@ -418,7 +442,7 @@ function addProteinMenu(){
         emptyMenu(protein_menu);
 
 
-        var acc = window.$(this).attr('accession-data');
+        var acc = $(this).attr('accession-data');
         protein_menu.append(new gui.MenuItem({
                         label: 'See in UniProt',
                         click: function(){ go2UniProt(acc); }
@@ -435,7 +459,7 @@ function addProteinMenu(){
 
 function emptyMenu(menu){
     // always remove the 0th item, since the menu automatically resizes itself after an item is removed
-    window.$.each(menu.items, function(){
+    $.each(menu.items, function(){
         menu.removeAt(0);
     });
 }
@@ -449,13 +473,13 @@ function go2UniProt(accession){
 function showSequence(accession){
     var html = "<h3>Details</h3>";
     html += "<div class=col-xs-12>" + ezf.getFasta(accession) + "</div>";
-    window.$('.panel-body', '#details').html(html);
+    $('.panel-body', '#details').html(html);
 }
 
 
 function sortTable(tbl_id){
     //modified from Rob W (http://stackoverflow.com/questions/7558182/sort-a-table-fast-by-its-first-column-with-javascript-or-jquery)
-    var tbl = window.document.getElementById(tbl_id).tBodies[0];
+    var tbl = document.getElementById(tbl_id).tBodies[0];
     var store = [];
     for(var i=0, len=tbl.rows.length; i<len; i++){
         var row = tbl.rows[i];
@@ -471,6 +495,5 @@ function sortTable(tbl_id){
     store = null;
 }
 
-module.exports = {
-	openEzView: openEzView
-}
+main();
+

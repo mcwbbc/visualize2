@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery-ui.min.css"/>
     <link rel="stylesheet" href="bower_components/datatables/datatables.min.css" />
     <link rel="stylesheet" href="./app.css" />
+
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.js"></script>
@@ -307,11 +308,10 @@
             </div>
         </div>
     </div>
-<script>
-    'use strict';
-    var app = require('./app');
-    app.buttonFunctions();
 
+<script src="ezUI.js" type="text/javascript"></script>
+
+<script>
     $.ui.plugin.add("resizable", "alsoResizeReverse", {
 
         start: function() {
