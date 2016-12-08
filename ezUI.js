@@ -208,7 +208,8 @@ function setActiveTR(index){
     if(index >= $('tr', '#protein-table tbody').length){ index = 0;}
     var htmlTR = $('tr', '#protein-table tbody').get(Number(index));
     $(htmlTR).addClass('success');
-    htmlTR.scrollIntoView({behavior: "smooth"});
+    htmlTR.scrollIntoView(true);
+
 }
 
 function listProteins(){

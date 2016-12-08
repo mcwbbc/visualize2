@@ -328,7 +328,7 @@ function getPeptides(protein){
     var peptides = [];
     global.$.each(json[protein].pep2scan, function(seq, val){
         peptides.push(seq);
-    })
+    });
     return peptides;
 
 }
