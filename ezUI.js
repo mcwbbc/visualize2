@@ -1,6 +1,7 @@
 'use strict';
 
 var gui = require('nw.gui');
+
 global.gui = gui;
 global.$ = $;
 global.console = console;
@@ -57,6 +58,95 @@ function addSaveasClick(){
             ezf.saveFile($(this).val());
         });
         chooser.trigger('click');
+    });
+}
+
+function addSpectraGraphClick(){
+    $('#show-spectra').click(function(){
+        var name = $('#detail-name').text(); //returns out file name
+        var data = ezf.getDtaText(name);
+        var dom_canvas = $('#spectraChart');
+        var cheight = $(dom_canvas).attr('height');
+        var cwidth = $(dom_canvas).attr('width');
+        var mz_axis = cheight - 20; //location of mz_axis
+
+        var by_ions = {}; //object to hold spectra for b y ion matching
+
+        if(data !== -1){
+            var canvas = new fabric.StaticCanvas('spectraChart'); //turn off object manipulation
+            var x_min = 0;
+            // create a rectangle object
+            var base_line = new fabric.Rect({
+                left: 0,
+                top: mz_axis,
+                width: cwidth,
+                height: 1,
+                fill: 'black'
+            });
+            canvas.add(base_line); //add the mz axis
+
+            //add tickmarks
+            for(var i = 0; i < cwidth; i += 100/data.max_mz * cwidth){
+                canvas.add(new fabric.Rect({
+                    left: i,
+                    top: mz_axis,
+                    height: 10,
+                    width: 1,
+                    fill: 'black'
+                }))
+                canvas.add(new fabric.Text(
+                    String(Math.round(i * data.max_mz / cwidth)), {
+                        fontSize: 10,
+                        left: i,
+                        top: mz_axis + 10
+                    }
+                ));
+            }
+
+            //TODO determine theoretical intensity for a theoretical peak
+            $.each(ezf.getIonCore(name), function(i, ions){
+                //var b_rect = new fabric.Rect({ left: ions.b_ion, top: mz_axis - 20,
+                //                height: 20, width: 1, fill: 'white', strokeDashArray: [2,1], stroke: 'blue'});
+                var b_line = new fabric.Line([ions.b_ion, mz_axis - 20, ions.b_ion, mz_axis], {strokeDashArray: [4,2],
+                                                stroke: 'blue'});
+                by_ions[Math.round(ions.b_ion)] = b_line;
+                canvas.add(b_line);
+
+            });
+
+            //console.log(JSON.stringify(by_ions));
+            //console.log(JSON.stringify(data));
+
+            $.each(data.data, function(i, spectrum){
+                if(x_min === 0) {
+                    x_min = spectrum['x'];
+                }
+
+                if(by_ions[Math.round(spectrum['x'])] === undefined){
+                    // Draw a spectra line
+                    var rect = new fabric.Rect({
+                        left: ((spectrum['x']) / data.max_mz) * cwidth,
+                        top: mz_axis - (spectrum['y'] / data.max_int) * mz_axis,
+                        fill: 'gray',
+                        width: 1,
+                        height: (spectrum['y'] / data.max_int) * mz_axis
+                    });
+
+                    // store the spectra for matching later
+
+                    // "add" rectangle onto canvas
+                    canvas.add(rect);
+                } else {
+                    by_ions[Math.round(spectrum['x'])].set({left: ((spectrum['x']) / data.max_mz) * cwidth,
+                        top: mz_axis - (spectrum['y'] / data.max_int) * mz_axis,
+                        fill: 'red',
+                        width: 1,
+                        height: (spectrum['y'] / data.max_int) * mz_axis});
+                }
+
+            });
+            console.log("max_mz " + data.max_mz + " max int " + data.max_int);
+        }
     });
 }
 
@@ -232,6 +322,7 @@ function listProteins(){
         template.content.querySelector('.mwt').innerText = ezf.calculateMonoWeight(this.accession).toPrecision(4);
         template.content.querySelector('.pi').innerText = ezf.calculatePH(this.accession).toPrecision(5);
         template.content.querySelector('.gravy').innerText = ezf.calculateGravy(this.accession).toPrecision(5);
+        template.content.querySelector('.desc').innerText = this.description;
         template.content.querySelector('.mod-0').innerText = this.modifications['*'];
         template.content.querySelector('.mod-1').innerText = this.modifications['#'];
         template.content.querySelector('.mod-2').innerText = this.modifications['@'];
@@ -245,6 +336,13 @@ function listProteins(){
 
     });
 
+    //negative columns count from the right of the table
+    var hidden_columns = [];
+    for(var i = -1; i > -9; i--){
+        hidden_columns.push(i);
+    }
+    console.log(hidden_columns);
+
     protein_data_table = $('#protein-table').DataTable({
         "paging": false,
         "info": false,
@@ -252,7 +350,7 @@ function listProteins(){
         "dom": '<"top"<"col-xs-6"B><"col-xs-6">f>',
         "buttons": ['copyHtml5','excelHtml5','pdfHtml5'],
         "columnDefs":[{
-            "targets":[8,9,10,11,12,13,14,15],
+            "targets": hidden_columns,
             "visible": false,
             "searchable": true
         }]

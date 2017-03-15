@@ -47,6 +47,10 @@ p, img{
     width: 60%;
 }
 
+#spectraChart{
+    background-color: white;
+}
+
 #main {
     padding-top: 2.3em;
     min-height: 100%;
@@ -85,8 +89,12 @@ p, img{
     max-height: 95%;
     background-color: #204d74;
     color: whitesmoke;
-
+    table-layout: fixed;
     overflow: scroll;
+}
+
+.protein td{
+    white-space: nowrap;
 }
 
 #protein-nav{

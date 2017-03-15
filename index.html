@@ -11,6 +11,7 @@
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="bower_components/datatables/datatables.min.js"></script>
+    <script type="text/javascript" src="bower_components/fabric.js/dist/fabric.js"></script>
 </head>
 <body>
 <input style="display:none;" id="fileDialog" type="file" accept=".ez2" />
@@ -36,7 +37,7 @@
 </div>
 </div>
     <div class="container-fluid full-height" id="report" style="display: none;">
-        <input id="saveas-dialog" type="file" nwsaveas style="display:none; />
+        <input id="saveas-dialog" type="file" nwsaveas style="display:none;" />
         <div class="row full-height" id="main-row">
             <div class="col-xs-4 full-height" id="column-1">
                 <div class="row full-height">
@@ -90,6 +91,7 @@
                                         <td class="mwt"/>
                                         <td class="pi"/>
                                         <td class="gravy"/>
+                                        <td class="desc"/>
                                         <td class="mod-0"/>
                                         <td class="mod-1"/>
                                         <td class="mod-2"/>
@@ -111,6 +113,7 @@
                                         <th>MWT</th>
                                         <th>pI</th>
                                         <th>GRAVY</th>
+                                        <th>Description</th>
                                         <th>*</th>
                                         <th>#</th>
                                         <th>@</th>
@@ -208,9 +211,17 @@
                         <div class=row>
                             <div class=col-xs-3>TIC</div><div class="col-xs-6" id="detail-tic"></div>
                         </div>
-                        <button type="button" class="btn btn-default btn-xs" id="ion-toggle">
-                            Show Ions
-                        </button>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" class="btn btn-default btn-xs" id="ion-toggle">
+                                    Show Ions
+                                </button>
+                                <button type="button" class="btn btn-default btn-xs" id="show-spectra">
+                                    Show Spectra
+                                </button>
+                            </div>
+                            <script>addSpectraGraphClick();</script>
+                        </div>
                        <!-- <div class="col-xs-6"> -->
                             <table class="table table-condensed" id="ion-core-table">
                                 <thead>
@@ -225,6 +236,9 @@
                                 <tbody></tbody>
                             </table>
                         <!--</div>-->
+                        <canvas id="spectraChart" width="800" height="800">
+
+                        </canvas>
                     </template>
                     <template id="ion-core-tr">
                         <tr class="ion-core">
@@ -312,6 +326,7 @@
 <script src="ezUI.js" type="text/javascript"></script>
 
 <script>
+    //adds ability to resize the vertical column
     $.ui.plugin.add("resizable", "alsoResizeReverse", {
 
         start: function() {

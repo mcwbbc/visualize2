@@ -73,14 +73,16 @@
           if(typeof mods_line !== 'undefined' ) {
               var mods = mods_line.split(/and|or/);
 
+              var mod_column_count = data.length - 8;
+              console.log(mod_column_count);
               if (mods_line !== '') {
                   mod_bool = false;
                   var mod_logic = /and|or/g.exec(mods_line);
                   $.each(mods, function (i, value) {
                       if (i === 0 || mod_logic[i - 1] === "or") {
-                          mod_bool = mod_bool || data[8 + mods_hash[value]] * 1 > 0;
+                          mod_bool = mod_bool || data[mod_column_count + mods_hash[value]] * 1 > 0;
                       } else {
-                          mod_bool = mod_bool && data[8 + mods_hash[value]] * 1 > 0;
+                          mod_bool = mod_bool && data[mod_column_count + mods_hash[value]] * 1 > 0;
                       }
                   })
               }

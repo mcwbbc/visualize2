@@ -22,6 +22,7 @@ function readEz2(file){
         file_names.push(entry.entryName);
     });
 
+    // when you find a file process it accordingly
     if(file_names.indexOf('protein_summary.xml') > -1){
         var json = undefined;
         if(file_names.indexOf('protein_summary.json') > -1){
@@ -32,11 +33,12 @@ function readEz2(file){
             json = xml.parse(text);
         }
 
-
+        //write file for testing
         fs.writeFile('./test.json', JSON.stringify(json), function(err){
             if(err){ return console.log(err);}
         });
         saveProteins(json);
+        //write file for testing
         fs.writeFile('./test.updated.json', JSON.stringify(protein_js), function(err){
             if(err){ return console.log(err);}
         });
@@ -95,6 +97,38 @@ function readEz2(file){
     }
 }
 
+function getDtaText(outName){
+
+    //returns the DTA data as an array of objects of, x (m/z) and y (intensity)
+
+    var zipEntries = ez2.getEntries();
+    var data = [];
+    var dtaName = outName.replace(/out$/, 'dta');
+    var max_int = 0;
+    var max_mz = 0;
+
+    //list of files in zip
+    zipEntries.forEach(function(entry){
+        if(entry.entryName.match(dtaName)){
+            var header = 0;
+            ez2.readAsText(entry.entryName,'utf8').split(/[\n\r]+/).forEach(function(line){
+                if(header === 0){
+                    header = 1;
+                } else if(line === "") {
+
+                } else {
+                    var points = line.split(/\s+?/);
+                    data.push({'x': points[0], 'y': points[1]});
+                    if(points[1] > Number(max_int)){ max_int = Number(points[1]);}
+                    if(points[0] > Number(max_mz)){ max_mz = Number(points[0]);}
+                }
+            });
+        }
+    });
+
+    return data.length === 0 ? -1 : {max_int: max_int, max_mz: max_mz, data: data};
+}
+
 function saveFile(file){
     var archive = archiver('zip');
     var gui = window.require('nw.gui');
@@ -121,6 +155,7 @@ function saveFile(file){
             archive.append(new Buffer(ez2.readAsText(entry.entryName,'utf8')), {name: entry.entryName});
         }
     });
+    //add JSON files to ZIP archive
     archive.append(new Buffer(JSON.stringify(protein_js)), {name: 'protein_summary.json'}).
         append(new Buffer(JSON.stringify(scan_js)), {name: 'scans.json'}).
         append(new Buffer(JSON.stringify(fasta_js)), {name: 'fasta.json'}).
@@ -487,5 +522,6 @@ module.exports = {
     totalScans: totalScans,
     getRedundantProteins: getRedundantProteins,
     removeProteins: removeProteins,
-    saveFile: saveFile
+    saveFile: saveFile,
+    getDtaText: getDtaText
 };
