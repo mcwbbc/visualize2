@@ -49,6 +49,7 @@ p, img{
 
 #spectraChart{
     background-color: white;
+    display: none;
 }
 
 #main {

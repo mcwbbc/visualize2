@@ -66,6 +66,13 @@ function addSpectraGraphClick(){
         var name = $('#detail-name').text(); //returns out file name
         var data = ezf.getDtaText(name);
         var dom_canvas = $('#spectraChart');
+        dom_canvas.toggle();
+
+        //short circuit function if graph is already drawn
+        if($(dom_canvas).attr('loaded')){
+            return true;
+        }
+        $(dom_canvas).attr('loaded', true);
         var cheight = $(dom_canvas).attr('height');
         var cwidth = $(dom_canvas).attr('width');
         var mz_axis = cheight - 20; //location of mz_axis
@@ -104,6 +111,7 @@ function addSpectraGraphClick(){
             }
 
             //TODO determine theoretical intensity for a theoretical peak
+            /*
             $.each(ezf.getIonCore(name), function(i, ions){
                 //var b_rect = new fabric.Rect({ left: ions.b_ion, top: mz_axis - 20,
                 //                height: 20, width: 1, fill: 'white', strokeDashArray: [2,1], stroke: 'blue'});
@@ -113,7 +121,7 @@ function addSpectraGraphClick(){
                 canvas.add(b_line);
 
             });
-
+            */
             //console.log(JSON.stringify(by_ions));
             //console.log(JSON.stringify(data));
 
